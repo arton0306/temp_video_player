@@ -13,8 +13,9 @@
     AVFrame *pFrame;
     AVPacket packet;
 	AVPicture picture;
+    AVPacket *_packet, _currentPacket;
 
-    
+    //audio
     NSLock *audioPacketQueueLock;
     AVCodecContext *_audioCodecContext;
     int16_t *_audioBuffer;
@@ -23,8 +24,6 @@
     AVStream *_audioStream;
     NSUInteger _audioBufferSize;
     BOOL _inBuffer;
-    AVPacket *_packet, _currentPacket;
-    BOOL primed;
 }
 
 @property (nonatomic, retain) NSMutableArray *audioPacketQueue;

@@ -541,11 +541,6 @@ AVCodecContext *p_getCodecCtxWithCodec( AVFormatContext * aFormatCtx, int aStrea
     }
 }
 
-- (void)nextPacket
-{
-    _inBuffer = NO;
-}
-
 - (AVPacket*)readPacket
 {
     if (_currentPacket.size > 0 || _inBuffer) return &_currentPacket;
@@ -578,7 +573,6 @@ AVCodecContext *p_getCodecCtxWithCodec( AVFormatContext * aFormatCtx, int aStrea
 - (void)closeAudio
 {
     [_audioController _stopAudio];
-    primed=NO;
 }
 
 - (void)p_savePPM:(NSData*)data index:(int)iFrame
