@@ -1,21 +1,21 @@
 //
-//  ZCVVideoProgressView.m
+//  CHWVideoProgressView.m
 //  Lifestamp
 //
 //  Created by Arton on 5/16/14.
 //  Copyright (c) 2014 Arton. All rights reserved.
 //
 
-#import "ZCVVideoProgressView.h"
+#import "CHWVideoProgressView.h"
 
-@implementation ZCVVideoProgressView
+@implementation CHWVideoProgressView
 
 - (id)initWithFrame:(CGRect)frame
 {
     self = [super initWithFrame:frame];
     if (self) {
         // Initialization code
-        NSLog( @"ZCVVideoProgressView initWithFrame" );
+        NSLog( @"CHWVideoProgressView initWithFrame" );
     }
     return self;
 }
@@ -23,7 +23,7 @@
 - (id)initWithCoder:(NSCoder *)aDecoder
 {
     if (self = [super initWithCoder:aDecoder]) {
-        NSLog( @"ZCVVideoProgressView initWithCoder" );
+        NSLog( @"CHWVideoProgressView initWithCoder" );
         
         [self setTransform:CGAffineTransformMakeScale(1.0, 5.0)];
         

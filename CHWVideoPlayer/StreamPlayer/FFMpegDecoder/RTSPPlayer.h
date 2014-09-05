@@ -5,8 +5,8 @@
 #import "swscale.h"
 #import <AudioToolbox/AudioQueue.h>
 #import <AudioToolbox/AudioToolbox.h>
-#import "ZCVAvFifo.h"
-#import "ZCVAVInfo.h"
+#import "CHWAvFifo.h"
+#import "CHWAVInfo.h"
 
 @interface RTSPPlayer : NSObject {
 	AVFormatContext *pFormatCtx;
@@ -35,9 +35,9 @@
 
 // Arton added -->
 
-@property (nonatomic, retain) ZCVAvFifo *videoFifo;
-@property (nonatomic, retain) ZCVAvFifo *audioFifo;
-@property (nonatomic, retain) ZCVAVInfo *avInfo;
+@property (nonatomic, retain) CHWAvFifo *videoFifo;
+@property (nonatomic, retain) CHWAvFifo *audioFifo;
+@property (nonatomic, retain) CHWAVInfo *avInfo;
 
 // Arton added <--
 
@@ -51,7 +51,7 @@
 - (void) dumpVideoInfo;
 - (void) dumpAudioInfo;
 - (double) nextVideoFrameTime;
-- (ZCVFrameSec*) getNextVideoFrameSec;
+- (CHWFrameSec*) getNextVideoFrameSec;
 -(id)initWithVideo:(NSString *)moviePath usesTcp:(BOOL)usesTcp;
 - (void) setOutputWidth:(int)width andHeight:(int)height;
 - (void) startDecode;

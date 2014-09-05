@@ -1,14 +1,14 @@
 //
-//  ZCVAvFifo.m
+//  CHWAvFifo.m
 //  Lifestamp
 //
 //  Created by Arton on 5/19/14.
 //  Copyright (c) 2014 Arton. All rights reserved.
 //
 
-#import "ZCVAvFifo.h"
+#import "CHWAvFifo.h"
 
-@implementation ZCVFrameSec
+@implementation CHWFrameSec
 
 - (id) initWithData:(NSData*)data AndPts:(double)pts
 {
@@ -66,14 +66,14 @@
 
 @end
 
-@interface ZCVAvFifo ()
+@interface CHWAvFifo ()
 
 @property (nonatomic, retain) NSLock *lock;
-@property (nonatomic, retain) ZCVFrameSec *tailFrame; // invalid if frame count is 0
+@property (nonatomic, retain) CHWFrameSec *tailFrame; // invalid if frame count is 0
 
 @end
 
-@implementation ZCVAvFifo
+@implementation CHWAvFifo
 
 - (id) init
 {
@@ -85,7 +85,7 @@
     return self;
 }
 
-- (void) enqueue:(ZCVFrameSec*)frameSec
+- (void) enqueue:(CHWFrameSec*)frameSec
 {
     [self.lock lock];
     self.tailFrame = frameSec;
@@ -94,9 +94,9 @@
     [self.lock unlock];
 }
 
-- (ZCVFrameSec*) dequeue
+- (CHWFrameSec*) dequeue
 {
-    ZCVFrameSec *frameSec;
+    CHWFrameSec *frameSec;
     [self.lock lock];
     frameSec = [super dequeue];
     --_frameCount;
@@ -104,9 +104,9 @@
     return frameSec;
 }
 
-- (ZCVFrameSec*) front
+- (CHWFrameSec*) front
 {
-    ZCVFrameSec *frameSec;
+    CHWFrameSec *frameSec;
     [self.lock lock];
     frameSec = super.head.object;
     [self.lock unlock];
@@ -119,7 +119,7 @@
     [self.lock lock];
     if ( self.frameCount > 1 )
     {
-        ZCVFrameSec *nearestFrame = super.head.object;
+        CHWFrameSec *nearestFrame = super.head.object;
         result = self.tailFrame.pts - nearestFrame.pts;
     }
     [self.lock unlock];

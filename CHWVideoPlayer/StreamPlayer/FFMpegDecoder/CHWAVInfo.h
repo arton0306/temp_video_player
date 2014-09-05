@@ -1,5 +1,5 @@
 //
-//  ZCVAVInfo.h
+//  CHWAVInfo.h
 //  Lifestamp
 //
 //  Created by Arton on 5/18/14.
@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "samplefmt.h"
 
-@interface ZCVAVInfo : NSObject
+@interface CHWAVInfo : NSObject
 
 @property (nonatomic, assign) int videoWidth;
 @property (nonatomic, assign) int videoHeight;

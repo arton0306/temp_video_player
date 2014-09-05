@@ -1,14 +1,14 @@
 //
-//  ZCVAVInfo.m
+//  CHWAVInfo.m
 //  Lifestamp
 //
 //  Created by Arton on 5/18/14.
 //  Copyright (c) 2014 Arton. All rights reserved.
 //
 
-#import "ZCVAVInfo.h"
+#import "CHWAVInfo.h"
 
-@implementation ZCVAVInfo
+@implementation CHWAVInfo
 
 - (NSString*) stringAVSampleFormat:(enum AVSampleFormat)format
 {

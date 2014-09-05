@@ -1,5 +1,5 @@
 //
-//  ZCVStreamViewController.m
+//  CHWStreamViewController.m
 //
 //  ref: DFURTSPPlayer
 //  which is
@@ -7,17 +7,17 @@
 //  Copyright (c) 2013 Bogdan Furdui. All rights reserved.
 //
 
-#import "ZCVStreamViewController.h"
+#import "CHWStreamViewController.h"
 #import "RTSPPlayer.h"
 #import "Utilities.h"
-#import "ZCVVideoProgressView.h"
+#import "CHWVideoProgressView.h"
 
-@interface ZCVStreamViewController ()
+@interface CHWStreamViewController ()
 @property (nonatomic, retain) NSTimer *nextFrameTimer;
-@property (nonatomic, retain) ZCVFrameSec *frameSec;
+@property (nonatomic, retain) CHWFrameSec *frameSec;
 @end
 
-@implementation ZCVStreamViewController
+@implementation CHWStreamViewController
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -127,7 +127,7 @@
 {
     //NSLog( @"displayNextFrame" );
     @autoreleasepool {
-        ZCVFrameSec *frameSec = [video getNextVideoFrameSec];
+        CHWFrameSec *frameSec = [video getNextVideoFrameSec];
         
         UIImage *frame = [frameSec toUIImage];
         if ( frame )

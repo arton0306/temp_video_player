@@ -1,14 +1,14 @@
 //
-//  ZCVAvFifo.h
+//  CHWAvFifo.h
 //  Lifestamp
 //
 //  Created by Arton on 5/19/14.
 //  Copyright (c) 2014 Arton. All rights reserved.
 //
 
-#import "ZCVQueue.h"
+#import "CHWQueue.h"
 
-@interface ZCVFrameSec : NSObject 
+@interface CHWFrameSec : NSObject 
 
 @property (nonatomic, retain) NSData *data;
 @property (nonatomic, assign) double pts;
@@ -21,13 +21,13 @@
 
 @end
 
-@interface ZCVAvFifo : ZCVQueue
+@interface CHWAvFifo : CHWQueue
 
 @property (nonatomic, assign, readonly) int frameCount;
 
-- (void) enqueue:(ZCVFrameSec*)frameSec;
-- (ZCVFrameSec*) dequeue;
-- (ZCVFrameSec*) front;
+- (void) enqueue:(CHWFrameSec*)frameSec;
+- (CHWFrameSec*) dequeue;
+- (CHWFrameSec*) front;
 - (double) getFrameTotalTimeInSec;
 
 @end

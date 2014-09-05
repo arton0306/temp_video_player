@@ -1,5 +1,5 @@
 //
-//  ZCVStreamViewController.h
+//  CHWStreamViewController.h
 //
 //  ref: DFURTSPPlayer
 //  which is 
@@ -8,18 +8,18 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "ZCVVideoProgressView.h"
+#import "CHWVideoProgressView.h"
 
 @class RTSPPlayer;
 
-@interface ZCVStreamViewController : UIViewController
+@interface CHWStreamViewController : UIViewController
 
 @property (nonatomic, retain) IBOutlet UIImageView *imageView;
 @property (nonatomic, retain) IBOutlet UILabel *fpsLabel;
 @property (nonatomic, retain) IBOutlet UILabel *durationLabel;
 @property (nonatomic, retain) IBOutlet UILabel *currentLabel;
 @property (nonatomic, retain) IBOutlet UIButton *playButton;
-@property (nonatomic, retain) IBOutlet ZCVVideoProgressView *playtimeProgress;
+@property (nonatomic, retain) IBOutlet CHWVideoProgressView *playtimeProgress;
 @property (nonatomic, retain) RTSPPlayer *video;
 
 - (IBAction)playButtonAction:(id)sender;

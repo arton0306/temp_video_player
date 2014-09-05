@@ -1,15 +1,15 @@
 //
-//  ZCVVideoView.m
+//  CHWVideoView.m
 //  PushCam
 //
 //  Created by Arton on 8/8/14.
 //  Copyright (c) 2014 Arton. All rights reserved.
 //
 
-#import "ZCVVideoView.h"
+#import "CHWVideoView.h"
 #import "RTSPPlayer.h"
 
-@interface ZCVVideoView()
+@interface CHWVideoView()
 
 @property (nonatomic, copy) TimeChangedHandler timeChangedHandler;
 @property (nonatomic, copy) InfoGetHandler infoGetHandler;
@@ -23,14 +23,14 @@
 
 @end
 
-@implementation ZCVVideoView
+@implementation CHWVideoView
 
 - (id)initWithFrame:(CGRect)frame
 {
     self = [super initWithFrame:frame];
     if (self) {
-        NSLog( @"ZCVVideoView init" );
-        self.videoState = ZCV_VIDEO_STATE_INIT;
+        NSLog( @"CHWVideoView init" );
+        self.videoState = CHW_VIDEO_STATE_INIT;
         // Initialization code
     }
     return self;

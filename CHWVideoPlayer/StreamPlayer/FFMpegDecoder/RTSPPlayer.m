@@ -1,8 +1,8 @@
 #import "RTSPPlayer.h"
 #import "Utilities.h"
 #import "AudioStreamer.h"
-#import "ZCVAVInfo.h"
-#import "ZCVAvFifo.h"
+#import "CHWAVInfo.h"
+#import "CHWAvFifo.h"
 
 #define BITS_PER_BYTES 8
 
@@ -51,8 +51,8 @@
 {
 	if (!(self=[super init])) return nil;
  
-    self.videoFifo = [ZCVAvFifo new];
-    self.audioFifo = [ZCVAvFifo new];
+    self.videoFifo = [CHWAvFifo new];
+    self.audioFifo = [CHWAvFifo new];
     
     // Register all formats and codecs
     avcodec_register_all();
@@ -108,7 +108,7 @@
     
     [self setOutputWidth:_videoCodecCtx->width andHeight:_videoCodecCtx->height];
     
-    self.avInfo = [ZCVAVInfo new];
+    self.avInfo = [CHWAVInfo new];
     self.avInfo.fps = av_q2d( pFormatCtx->streams[self.videoStreamIndex]->avg_frame_rate ),
     self.avInfo.durationUsecs = pFormatCtx->duration,
     self.avInfo.videoWidth = self.videoCodecCtx->width;
@@ -369,7 +369,7 @@ AVCodecContext *p_getCodecCtxWithCodec( AVFormatContext * aFormatCtx, int aStrea
                 // fill in our ppm buffer
                 // TODO: the origin code use ptsSec, check it
                 NSData *frameData = [NSData dataWithBytes:self.frameRGB->data[0] length:self.outputWidth*self.outputHeight*3];
-                ZCVFrameSec *frameSec = [[ZCVFrameSec alloc] initWithData:frameData
+                CHWFrameSec *frameSec = [[CHWFrameSec alloc] initWithData:frameData
                                                                    AndPts:dtsSec
                                                                  AndWidth:self.outputWidth
                                                                 AndHeight:self.outputHeight];
@@ -409,7 +409,7 @@ AVCodecContext *p_getCodecCtxWithCodec( AVFormatContext * aFormatCtx, int aStrea
                         NSData *data = [NSData dataWithBytes:decodedFrame->data[0] length:data_size];
                         double const dtsSec = packet.dts * av_q2d( pFormatCtx->streams[self.audioStreamIndex]->time_base );
                         double const ptsSec = packet.pts * av_q2d( pFormatCtx->streams[self.audioStreamIndex]->time_base );
-                        [self.audioFifo enqueue:[[ZCVFrameSec alloc] initWithData:data AndPts:ptsSec]];
+                        [self.audioFifo enqueue:[[CHWFrameSec alloc] initWithData:data AndPts:ptsSec]];
                         
                         /*
                         // apply audio effect and push audio data to fifo
@@ -591,14 +591,14 @@ AVCodecContext *p_getCodecCtxWithCodec( AVFormatContext * aFormatCtx, int aStrea
 
 - (double) nextVideoFrameTime
 {
-    ZCVFrameSec *frameSec = [self.videoFifo front];
+    CHWFrameSec *frameSec = [self.videoFifo front];
     if ( !frameSec ) return -1;
     return frameSec.pts;
 }
 
-- (ZCVFrameSec*) getNextVideoFrameSec
+- (CHWFrameSec*) getNextVideoFrameSec
 {
-    ZCVFrameSec *frameSec = [self.videoFifo dequeue];
+    CHWFrameSec *frameSec = [self.videoFifo dequeue];
     return frameSec;
 }
 

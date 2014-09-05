@@ -1,5 +1,5 @@
 //
-//  ZCVQueue.h
+//  CHWQueue.h
 //  Lifestamp
 //
 //  Created by Arton on 5/18/14.
@@ -15,7 +15,7 @@
 
 @end
 
-@interface ZCVQueue : NSObject
+@interface CHWQueue : NSObject
 
 @property (nonatomic, retain) Node* head;
 

@@ -1,23 +1,23 @@
 //
-//  ZCVQueue.m
+//  CHWQueue.m
 //  Lifestamp
 //
 //  Created by Arton on 5/18/14.
 //  Copyright (c) 2014 Arton. All rights reserved.
 //
 
-#import "ZCVQueue.h"
+#import "CHWQueue.h"
 
 @implementation Node
 @end
 
-@interface ZCVQueue ()
+@interface CHWQueue ()
 
 @property (nonatomic, retain) Node* tail;
 
 @end
 
-@implementation ZCVQueue
+@implementation CHWQueue
 
 - (id)init
 {
