@@ -33,18 +33,7 @@
 #pragma mark - setter and getter
 
 
-#pragma mark - dumper
-- (void) dumpAudioInfo
-{
-    NSLog( @"=============== audio more info =================" );
-    NSLog( @"audio sample rate:%d", self.audioCodecCtx->sample_rate );
-    NSLog( @"audio channel count:%d", self.audioCodecCtx->channels );
-    NSLog( @"audio codec id:%d", self.audioCodecCtx->codec_id );
-    NSLog( @"audio bits per sample:%d", av_get_bits_per_sample( self.audioCodecCtx->codec_id ) );
-    NSLog( @"audio exact bits per sample:%d", av_get_exact_bits_per_sample( self.audioCodecCtx->codec_id ) );
-    NSLog( @"audio codec name:%s", avcodec_get_name( self.audioCodecCtx->codec_id ) );
-    NSLog( @"--------------------------------------------" );
-}
+
 
 #pragma mark - init and dealloc
 - (id)initWithVideo:(NSString *)moviePath usesTcp:(BOOL)usesTcp
@@ -120,7 +109,7 @@
     
     // [self dumpVideoInfo];
     [self.avInfo dump];
-    [self dumpAudioInfo];
+    [self p_dumpAudioInfo];
     
     return self;
 }
@@ -594,6 +583,19 @@ AVCodecContext *p_getCodecCtxWithCodec( AVFormatContext * aFormatCtx, int aStrea
 {
     CHWFrameSec *frameSec = [self.videoFifo dequeue];
     return frameSec;
+}
+
+#pragma mark - dumper
+- (void) p_dumpAudioInfo
+{
+    NSLog( @"=============== audio more info =================" );
+    NSLog( @"audio sample rate:%d", self.audioCodecCtx->sample_rate );
+    NSLog( @"audio channel count:%d", self.audioCodecCtx->channels );
+    NSLog( @"audio codec id:%d", self.audioCodecCtx->codec_id );
+    NSLog( @"audio bits per sample:%d", av_get_bits_per_sample( self.audioCodecCtx->codec_id ) );
+    NSLog( @"audio exact bits per sample:%d", av_get_exact_bits_per_sample( self.audioCodecCtx->codec_id ) );
+    NSLog( @"audio codec name:%s", avcodec_get_name( self.audioCodecCtx->codec_id ) );
+    NSLog( @"--------------------------------------------" );
 }
 
 @end

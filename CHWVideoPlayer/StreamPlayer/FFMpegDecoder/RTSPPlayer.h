@@ -48,7 +48,7 @@
 
 // Arton added -->
 - (void) dumpVideoInfo;
-- (void) dumpAudioInfo;
+- (void) p_dumpAudioInfo;
 - (double) nextVideoFrameTime;
 - (CHWFrameSec*) getNextVideoFrameSec;
 -(id)initWithVideo:(NSString *)moviePath usesTcp:(BOOL)usesTcp;
