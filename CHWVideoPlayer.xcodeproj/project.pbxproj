@@ -42,6 +42,8 @@
 		B97A35AC19B9696C00030116 /* ZCVStreamViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B97A359519B9696C00030116 /* ZCVStreamViewController.m */; };
 		B97A35AD19B9696C00030116 /* ZCVVideoProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = B97A359719B9696C00030116 /* ZCVVideoProgressView.m */; };
 		B97A35AE19B9696C00030116 /* ZCVVideoView.m in Sources */ = {isa = PBXBuildFile; fileRef = B97A359919B9696C00030116 /* ZCVVideoView.m */; };
+		B97A35B019B9723C00030116 /* libbz2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = B97A35AF19B9723C00030116 /* libbz2.dylib */; };
+		B97A35B219B9724600030116 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = B97A35B119B9724600030116 /* libz.dylib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -179,6 +181,8 @@
 		B97A359719B9696C00030116 /* ZCVVideoProgressView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZCVVideoProgressView.m; sourceTree = "<group>"; };
 		B97A359819B9696C00030116 /* ZCVVideoView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZCVVideoView.h; sourceTree = "<group>"; };
 		B97A359919B9696C00030116 /* ZCVVideoView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZCVVideoView.m; sourceTree = "<group>"; };
+		B97A35AF19B9723C00030116 /* libbz2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libbz2.dylib; path = usr/lib/libbz2.dylib; sourceTree = SDKROOT; };
+		B97A35B119B9724600030116 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -186,16 +190,18 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B97A35B219B9724600030116 /* libz.dylib in Frameworks */,
+				B97A35B019B9723C00030116 /* libbz2.dylib in Frameworks */,
+				B97A34F019B967D800030116 /* CoreGraphics.framework in Frameworks */,
+				B97A34EE19B967D800030116 /* Foundation.framework in Frameworks */,
+				B97A34F219B967D800030116 /* UIKit.framework in Frameworks */,
 				B97A35A819B9696C00030116 /* libavutil.a in Frameworks */,
 				B97A35A519B9696C00030116 /* libavfilter.a in Frameworks */,
 				B97A35AA19B9696C00030116 /* libswscale.a in Frameworks */,
 				B97A35A419B9696C00030116 /* libavdevice.a in Frameworks */,
 				B97A35A619B9696C00030116 /* libavformat.a in Frameworks */,
-				B97A34F019B967D800030116 /* CoreGraphics.framework in Frameworks */,
-				B97A34F219B967D800030116 /* UIKit.framework in Frameworks */,
 				B97A35A919B9696C00030116 /* libswresample.a in Frameworks */,
 				B97A35A719B9696C00030116 /* libavresample.a in Frameworks */,
-				B97A34EE19B967D800030116 /* Foundation.framework in Frameworks */,
 				B97A35A319B9696C00030116 /* libavcodec.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -235,6 +241,8 @@
 		B97A34EC19B967D800030116 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				B97A35B119B9724600030116 /* libz.dylib */,
+				B97A35AF19B9723C00030116 /* libbz2.dylib */,
 				B97A34ED19B967D800030116 /* Foundation.framework */,
 				B97A34EF19B967D800030116 /* CoreGraphics.framework */,
 				B97A34F119B967D800030116 /* UIKit.framework */,
@@ -739,6 +747,7 @@
 		B97A351D19B967D800030116 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -749,6 +758,7 @@
 					"$(PROJECT_DIR)/CHWVideoPlayer/StreamPlayer/FFMpegiOS/lib",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -756,6 +766,7 @@
 		B97A351E19B967D800030116 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -766,6 +777,7 @@
 					"$(PROJECT_DIR)/CHWVideoPlayer/StreamPlayer/FFMpegiOS/lib",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
