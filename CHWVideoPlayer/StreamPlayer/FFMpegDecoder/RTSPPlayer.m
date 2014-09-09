@@ -203,7 +203,7 @@ AVCodecContext *p_getCodecCtxWithCodec( AVFormatContext * aFormatCtx, int aStrea
 
 - (BOOL) p_isDecodedFrameEnough
 {
-    return ( self.videoFifo.frameCount >= 3 ) && ( [self.audioFifo getFrameTotalTimeInSec] > 0.5 );
+    return ( self.videoFifo.frameCount >= 5 ) && ( [self.audioFifo getFrameTotalTimeInSec] > 1.5 );
     //return ( self.videoFifo.frameCount >= 3 );
 }
 

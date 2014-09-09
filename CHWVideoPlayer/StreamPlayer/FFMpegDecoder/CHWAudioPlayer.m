@@ -273,7 +273,7 @@ void audioQueueIsRunningCallback(void *inClientData, AudioQueueRef inAQ,
     OSStatus status = noErr;
     
     if (buffer) {
-        /*
+
         AudioTimeStamp bufferStartTime;
         buffer->mAudioDataByteSize = 0;
         buffer->mPacketDescriptionCount = 0;
@@ -304,15 +304,15 @@ void audioQueueIsRunningCallback(void *inClientData, AudioQueueRef inAQ,
                 break;
             }
         }
-         */
+
         
+        /*
         buffer->mAudioDataByteSize = buffer->mAudioDataBytesCapacity;
-        
-        //int *buffer = (int *)inBuffer->mAudioData;
         for (int i = 0; i < buffer->mAudioDataByteSize/sizeof(int); ++i)
         {
             ((int*)buffer->mAudioData)[i] = (int)rand(); // refill the buffer
         }
+        */
         
         status = AudioQueueEnqueueBuffer(audioQueue, buffer, 0, NULL);
         if (status != noErr) {
