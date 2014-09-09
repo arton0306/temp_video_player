@@ -216,7 +216,9 @@ void audioQueueIsRunningCallback(void *inClientData, AudioQueueRef inAQ,
     //        audioStreamBasicDesc_.mBitsPerChannel = 0;
     //    }
     
-    OSStatus status = AudioQueueNewOutput( &audioStreamBasicDesc, audioQueueOutputCallback, (__bridge void*)self, NULL, NULL, 0, &audioQueue );
+    //OSStatus status = AudioQueueNewOutput( &audioStreamBasicDesc, audioQueueOutputCallback, (__bridge void*)self, NULL, NULL, 0, &audioQueue );
+    //OSStatus status = AudioQueueNewOutput( &format, audioQueueOutputCallback, (__bridge void*)self, CFRunLoopGetCurrent(), kCFRunLoopCommonModes, 0, &audioQueue );
+    OSStatus status = AudioQueueNewOutput( &format, audioQueueOutputCallback, (__bridge void*)self, NULL, NULL, 0, &audioQueue );
     if (status != noErr) {
         NSLog(@"Could not create new audio queue.");
         return NO;
@@ -271,6 +273,7 @@ void audioQueueIsRunningCallback(void *inClientData, AudioQueueRef inAQ,
     OSStatus status = noErr;
     
     if (buffer) {
+        /*
         AudioTimeStamp bufferStartTime;
         buffer->mAudioDataByteSize = 0;
         buffer->mPacketDescriptionCount = 0;
@@ -300,6 +303,15 @@ void audioQueueIsRunningCallback(void *inClientData, AudioQueueRef inAQ,
             {
                 break;
             }
+        }
+         */
+        
+        buffer->mAudioDataByteSize = buffer->mAudioDataBytesCapacity;
+        
+        //int *buffer = (int *)inBuffer->mAudioData;
+        for (int i = 0; i < buffer->mAudioDataByteSize/sizeof(int); ++i)
+        {
+            ((int*)buffer->mAudioData)[i] = (int)rand(); // refill the buffer
         }
         
         status = AudioQueueEnqueueBuffer(audioQueue, buffer, 0, NULL);
