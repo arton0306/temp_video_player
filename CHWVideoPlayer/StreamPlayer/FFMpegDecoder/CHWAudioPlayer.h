@@ -8,6 +8,9 @@
 
 #import <Foundation/Foundation.h>
 #import <AudioToolbox/AudioToolbox.h>
+#import "avcodec.h"
+
+@class CHWVideoFrameFifo;
 
 @interface CHWAudioPlayer : NSObject
 
@@ -23,6 +26,11 @@ typedef NS_ENUM( NSInteger, CHW_AUDIO_STATE )
 
 @property (nonatomic, assign) CHW_AUDIO_STATE state;
 
+- (id) initWithAVCodecContext:(AVCodecContext*)aAudioCodecContext AndAudioFifo:(CHWVideoFrameFifo*)audioFifo;
+- (BOOL) play;
+- (BOOL) pause;
+
+// TODO: make audioQueueOutputCallback audioQueueIsRunningCallback be not interfaces
 - (void)audioQueueOutputCallback:(AudioQueueRef)inAQ inBuffer:(AudioQueueBufferRef)inBuffer;
 - (void)audioQueueIsRunningCallback;
 

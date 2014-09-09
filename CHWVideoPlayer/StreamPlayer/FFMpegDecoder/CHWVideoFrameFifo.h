@@ -21,7 +21,7 @@
 
 @end
 
-@interface CHWAvFifo : CHWQueue
+@interface CHWVideoFrameFifo : CHWQueue
 
 @property (nonatomic, assign, readonly) int frameCount;
 

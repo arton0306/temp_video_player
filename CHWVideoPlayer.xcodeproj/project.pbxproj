@@ -24,11 +24,10 @@
 		B97A359A19B9696C00030116 /* Sawmah-ImBusy(1280x720).mp4 in Resources */ = {isa = PBXBuildFile; fileRef = B97A352419B9696C00030116 /* Sawmah-ImBusy(1280x720).mp4 */; };
 		B97A359B19B9696C00030116 /* Sawmah-ImBusy(640x360).mp4 in Resources */ = {isa = PBXBuildFile; fileRef = B97A352519B9696C00030116 /* Sawmah-ImBusy(640x360).mp4 */; };
 		B97A359C19B9696C00030116 /* sophie.mov in Resources */ = {isa = PBXBuildFile; fileRef = B97A352619B9696C00030116 /* sophie.mov */; };
-		B97A359D19B9696C00030116 /* AudioStreamer.m in Sources */ = {isa = PBXBuildFile; fileRef = B97A352A19B9696C00030116 /* AudioStreamer.m */; };
 		B97A359E19B9696C00030116 /* FrameFifo.mm in Sources */ = {isa = PBXBuildFile; fileRef = B97A352C19B9696C00030116 /* FrameFifo.mm */; };
 		B97A359F19B9696C00030116 /* RTSPPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = B97A352E19B9696C00030116 /* RTSPPlayer.m */; };
 		B97A35A019B9696C00030116 /* Utilities.m in Sources */ = {isa = PBXBuildFile; fileRef = B97A353019B9696C00030116 /* Utilities.m */; };
-		B97A35A119B9696C00030116 /* CHWAvFifo.m in Sources */ = {isa = PBXBuildFile; fileRef = B97A353219B9696C00030116 /* CHWAvFifo.m */; };
+		B97A35A119B9696C00030116 /* CHWVideoFrameFifo.m in Sources */ = {isa = PBXBuildFile; fileRef = B97A353219B9696C00030116 /* CHWVideoFrameFifo.m */; };
 		B97A35A219B9696C00030116 /* CHWAVInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = B97A353419B9696C00030116 /* CHWAVInfo.m */; };
 		B97A35A319B9696C00030116 /* libavcodec.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B97A358A19B9696C00030116 /* libavcodec.a */; };
 		B97A35A419B9696C00030116 /* libavdevice.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B97A358B19B9696C00030116 /* libavdevice.a */; };
@@ -80,16 +79,14 @@
 		B97A352419B9696C00030116 /* Sawmah-ImBusy(1280x720).mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Sawmah-ImBusy(1280x720).mp4"; sourceTree = "<group>"; };
 		B97A352519B9696C00030116 /* Sawmah-ImBusy(640x360).mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Sawmah-ImBusy(640x360).mp4"; sourceTree = "<group>"; };
 		B97A352619B9696C00030116 /* sophie.mov */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = sophie.mov; sourceTree = "<group>"; };
-		B97A352919B9696C00030116 /* AudioStreamer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioStreamer.h; sourceTree = "<group>"; };
-		B97A352A19B9696C00030116 /* AudioStreamer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AudioStreamer.m; sourceTree = "<group>"; };
 		B97A352B19B9696C00030116 /* FrameFifo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FrameFifo.h; sourceTree = "<group>"; };
 		B97A352C19B9696C00030116 /* FrameFifo.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = FrameFifo.mm; sourceTree = "<group>"; };
 		B97A352D19B9696C00030116 /* RTSPPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RTSPPlayer.h; sourceTree = "<group>"; };
 		B97A352E19B9696C00030116 /* RTSPPlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RTSPPlayer.m; sourceTree = "<group>"; };
 		B97A352F19B9696C00030116 /* Utilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Utilities.h; sourceTree = "<group>"; };
 		B97A353019B9696C00030116 /* Utilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Utilities.m; sourceTree = "<group>"; };
-		B97A353119B9696C00030116 /* CHWAvFifo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CHWAvFifo.h; sourceTree = "<group>"; };
-		B97A353219B9696C00030116 /* CHWAvFifo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CHWAvFifo.m; sourceTree = "<group>"; };
+		B97A353119B9696C00030116 /* CHWVideoFrameFifo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CHWVideoFrameFifo.h; sourceTree = "<group>"; };
+		B97A353219B9696C00030116 /* CHWVideoFrameFifo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CHWVideoFrameFifo.m; sourceTree = "<group>"; };
 		B97A353319B9696C00030116 /* CHWAVInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CHWAVInfo.h; sourceTree = "<group>"; };
 		B97A353419B9696C00030116 /* CHWAVInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CHWAVInfo.m; sourceTree = "<group>"; };
 		B97A353819B9696C00030116 /* avcodec.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = avcodec.h; sourceTree = "<group>"; };
@@ -329,16 +326,14 @@
 		B97A352819B9696C00030116 /* FFMpegDecoder */ = {
 			isa = PBXGroup;
 			children = (
-				B97A352919B9696C00030116 /* AudioStreamer.h */,
-				B97A352A19B9696C00030116 /* AudioStreamer.m */,
 				B97A352B19B9696C00030116 /* FrameFifo.h */,
 				B97A352C19B9696C00030116 /* FrameFifo.mm */,
 				B97A352D19B9696C00030116 /* RTSPPlayer.h */,
 				B97A352E19B9696C00030116 /* RTSPPlayer.m */,
 				B97A352F19B9696C00030116 /* Utilities.h */,
 				B97A353019B9696C00030116 /* Utilities.m */,
-				B97A353119B9696C00030116 /* CHWAvFifo.h */,
-				B97A353219B9696C00030116 /* CHWAvFifo.m */,
+				B97A353119B9696C00030116 /* CHWVideoFrameFifo.h */,
+				B97A353219B9696C00030116 /* CHWVideoFrameFifo.m */,
 				B97A353319B9696C00030116 /* CHWAVInfo.h */,
 				B97A353419B9696C00030116 /* CHWAVInfo.m */,
 				B97A35B319B9951900030116 /* CHWAudioPlayer.h */,
@@ -625,10 +620,9 @@
 				B97A359E19B9696C00030116 /* FrameFifo.mm in Sources */,
 				B97A35AC19B9696C00030116 /* CHWStreamViewController.m in Sources */,
 				B97A34FA19B967D800030116 /* main.m in Sources */,
-				B97A35A119B9696C00030116 /* CHWAvFifo.m in Sources */,
+				B97A35A119B9696C00030116 /* CHWVideoFrameFifo.m in Sources */,
 				B97A34FE19B967D800030116 /* CHWAppDelegate.m in Sources */,
 				B97A35A019B9696C00030116 /* Utilities.m in Sources */,
-				B97A359D19B9696C00030116 /* AudioStreamer.m in Sources */,
 				B97A35AD19B9696C00030116 /* CHWVideoProgressView.m in Sources */,
 				B97A35AE19B9696C00030116 /* CHWVideoView.m in Sources */,
 			);
@@ -753,7 +747,7 @@
 		B97A351D19B967D800030116 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD)";
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -764,7 +758,7 @@
 					"$(PROJECT_DIR)/CHWVideoPlayer/StreamPlayer/FFMpegiOS/lib",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "6283A886-E584-4421-8D8E-DA0D2051CB5A";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -772,7 +766,7 @@
 		B97A351E19B967D800030116 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD)";
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -783,7 +777,7 @@
 					"$(PROJECT_DIR)/CHWVideoPlayer/StreamPlayer/FFMpegiOS/lib",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "6283A886-E584-4421-8D8E-DA0D2051CB5A";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
@@ -847,6 +841,7 @@
 				B97A351E19B967D800030116 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		B97A351F19B967D800030116 /* Build configuration list for PBXNativeTarget "CHWVideoPlayerTests" */ = {
 			isa = XCConfigurationList;
@@ -855,6 +850,7 @@
 				B97A352119B967D800030116 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

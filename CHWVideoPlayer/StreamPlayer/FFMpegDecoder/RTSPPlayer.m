@@ -1,13 +1,12 @@
 #import "RTSPPlayer.h"
 #import "Utilities.h"
-#import "AudioStreamer.h"
 #import "CHWAVInfo.h"
-#import "CHWAvFifo.h"
+#import "CHWVideoFrameFifo.h"
 
 #define BITS_PER_BYTES 8
 
 @interface RTSPPlayer ()
-@property (nonatomic, retain) AudioStreamer *audioController;
+
 @property (nonatomic, assign) AVCodecContext *videoCodecCtx;
 @property (nonatomic, assign) AVCodecContext *audioCodecCtx;
 @property (nonatomic, assign) int outputWidth;
@@ -25,11 +24,6 @@
 
 @implementation RTSPPlayer
 
-@synthesize audioController = _audioController;
-@synthesize audioPacketQueue,audioPacketQueueSize;
-@synthesize _audioStream,_audioCodecContext;
-@synthesize emptyAudioBuffer;
-
 #pragma mark - setter and getter
 
 
@@ -40,8 +34,8 @@
 {
 	if (!(self=[super init])) return nil;
  
-    self.videoFifo = [CHWAvFifo new];
-    self.audioFifo = [CHWAvFifo new];
+    self.videoFifo = [CHWVideoFrameFifo new];
+    self.audioFifo = [CHWVideoFrameFifo new];
     
     // Register all formats and codecs
     avcodec_register_all();
@@ -91,20 +85,28 @@
     _videoCodecCtx = NULL;
     _audioCodecCtx = NULL;
     {
-        if ( self.videoStreamIndex >= 0 ) _videoCodecCtx = p_getCodecCtxWithCodec( pFormatCtx, self.videoStreamIndex );
-        if ( self.audioStreamIndex >= 0 ) _audioCodecCtx = p_getCodecCtxWithCodec( pFormatCtx, self.audioStreamIndex );
+        if ( self.videoStreamIndex >= 0 )
+        {
+            _videoCodecCtx = p_getCodecCtxWithCodec( pFormatCtx, self.videoStreamIndex );
+        }
+        if ( self.audioStreamIndex >= 0 )
+        {
+            _audioCodecCtx = p_getCodecCtxWithCodec( pFormatCtx, self.audioStreamIndex );
+            self.audioPlayer = [[CHWAudioPlayer alloc] initWithAVCodecContext:_audioCodecCtx AndAudioFifo:self.audioFifo];
+        }
     }
     
     [self setOutputWidth:_videoCodecCtx->width andHeight:_videoCodecCtx->height];
     
     self.avInfo = [CHWAVInfo new];
-    self.avInfo.fps = av_q2d( pFormatCtx->streams[self.videoStreamIndex]->avg_frame_rate ),
-    self.avInfo.durationUsecs = pFormatCtx->duration,
+    self.avInfo.fps = av_q2d( pFormatCtx->streams[self.videoStreamIndex]->avg_frame_rate );
+    NSLog( @"!!! fps = %lf", av_q2d( pFormatCtx->streams[self.videoStreamIndex]->avg_frame_rate ) );
+    self.avInfo.durationUsecs = pFormatCtx->duration;
     self.avInfo.videoWidth = self.videoCodecCtx->width;
     self.avInfo.videoHeight = self.videoCodecCtx->height;
-    self.avInfo.audioChannel = _audioCodecCtx->channels,
-    self.avInfo.audioSampleFormat = _audioCodecCtx->sample_fmt,
-    self.avInfo.audioSampleRate = _audioCodecCtx->sample_rate,
+    self.avInfo.audioChannel = _audioCodecCtx->channels;
+    self.avInfo.audioSampleFormat = _audioCodecCtx->sample_fmt;
+    self.avInfo.audioSampleRate = _audioCodecCtx->sample_rate;
     self.avInfo.audioBitsPerSample = av_get_bytes_per_sample( _audioCodecCtx->sample_fmt ) * BITS_PER_BYTES;
     
     // [self dumpVideoInfo];
@@ -165,18 +167,6 @@
 	
     // Close the video file
     if (pFormatCtx) avformat_close_input(&pFormatCtx);
-    
-    [_audioController _stopAudio];
-    // [_audioController release];
-    _audioController = nil;
-	
-    // [audioPacketQueue release];
-    audioPacketQueue = nil;
-    
-    // [audioPacketQueueLock release];
-    audioPacketQueueLock = nil;
-    
-	// [super dealloc];
 }
 
 #pragma mark - private functions
@@ -481,87 +471,7 @@ AVCodecContext *p_getCodecCtxWithCodec( AVFormatContext * aFormatCtx, int aStrea
 	AVRational timeBase = pFormatCtx->streams[self.videoStreamIndex]->time_base;
 	int64_t targetFrame = (int64_t)((double)timeBase.den / timeBase.num * seconds);
 	avformat_seek_file(pFormatCtx, self.videoStreamIndex, targetFrame, targetFrame, targetFrame, AVSEEK_FLAG_FRAME);
-    [_audioController _flushAudio];
 	avcodec_flush_buffers(self.videoCodecCtx);
-}
-
-- (void)setupAudioDecoder
-{    
-    if (self.audioStreamIndex >= 0) {
-        _audioBufferSize = AVCODEC_MAX_AUDIO_FRAME_SIZE;
-        _audioBuffer = (short*)av_malloc(_audioBufferSize);
-        _inBuffer = NO;
-        
-        _audioCodecContext = pFormatCtx->streams[self.audioStreamIndex]->codec;
-        _audioStream = pFormatCtx->streams[self.audioStreamIndex];
-        
-        AVCodec *codec = avcodec_find_decoder(_audioCodecContext->codec_id);
-        if (codec == NULL) {
-            NSLog(@"Not found audio codec.");
-            return;
-        }
-        
-        if (avcodec_open2(_audioCodecContext, codec, NULL) < 0) {
-            NSLog(@"Could not open audio codec.");
-            return;
-        }
-        
-        if (audioPacketQueue) {
-            // [audioPacketQueue release];
-            audioPacketQueue = nil;
-        }        
-        audioPacketQueue = [[NSMutableArray alloc] init];
-        
-        if (audioPacketQueueLock) {
-            // [audioPacketQueueLock release];
-            audioPacketQueueLock = nil;
-        }
-        audioPacketQueueLock = [[NSLock alloc] init];
-        
-        if (_audioController) {
-            [_audioController _stopAudio];
-            // [_audioController release];
-            _audioController = nil;
-        }
-        _audioController = [[AudioStreamer alloc] initWithStreamer:self];
-    } else {
-        pFormatCtx->streams[self.audioStreamIndex]->discard = AVDISCARD_ALL;
-        self.audioStreamIndex = -1;
-    }
-}
-
-- (AVPacket*)readPacket
-{
-    if (_currentPacket.size > 0 || _inBuffer) return &_currentPacket;
-    
-    NSMutableData *packetData = [audioPacketQueue objectAtIndex:0];
-    _packet = (AVPacket*)[packetData mutableBytes];
-    
-    if (_packet) {
-        if (_packet->dts != AV_NOPTS_VALUE) {
-            _packet->dts += av_rescale_q(0, AV_TIME_BASE_Q, _audioStream->time_base);
-        }
-        
-        if (_packet->pts != AV_NOPTS_VALUE) {
-            _packet->pts += av_rescale_q(0, AV_TIME_BASE_Q, _audioStream->time_base);
-        }
-        
-        [audioPacketQueueLock lock];
-        audioPacketQueueSize -= _packet->size;
-        if ([audioPacketQueue count] > 0) {
-            [audioPacketQueue removeObjectAtIndex:0];
-        }
-        [audioPacketQueueLock unlock];
-        
-        _currentPacket = *(_packet);
-    }
-    
-    return &_currentPacket;   
-}
-
-- (void)closeAudio
-{
-    [_audioController _stopAudio];
 }
 
 - (void)p_savePPM:(NSData*)data index:(int)iFrame

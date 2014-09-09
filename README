@@ -1,2 +1,2 @@
 1. please link binary with library libz.lib libbz2.lib
-2. 
+2. set architectures $(ARCHS_STANDARD_32_BIT) in Build Settings

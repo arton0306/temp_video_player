@@ -35,11 +35,11 @@
     // NSString *thePath=[[NSBundle mainBundle] pathForResource:@"sophie" ofType:@"mov"];
     NSString *thePath=[[NSBundle mainBundle] pathForResource:@"Sawmah-ImBusy(640x360)" ofType:@"mp4"];
 
+    BOOL isUseTcp = NO;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        //self.video = [[RTSPPlayer alloc] initWithVideo:thePath usesTcp:NO];
+        self.video = [[RTSPPlayer alloc] initWithVideo:thePath usesTcp:isUseTcp];
         
-        
-        self.video = [[RTSPPlayer alloc] initWithVideo:@"rtsp://media1.law.harvard.edu/Media/policy_a/2012/02/02_unger.mov" usesTcp:NO];//
+        //self.video = [[RTSPPlayer alloc] initWithVideo:@"rtsp://media1.law.harvard.edu/Media/policy_a/2012/02/02_unger.mov" usesTcp:YES];//
         
         // video = [[RTSPPlayer alloc] initWithVideo:@"http://www.wowza.com/_h264/BigBuckBunny_115k.mov" usesTcp:NO];
         
@@ -84,6 +84,7 @@
                                                          userInfo:nil
                                                           repeats:YES];
     */
+    [self.video.audioPlayer play];
     [self p_displayNextFrame];
 }
 

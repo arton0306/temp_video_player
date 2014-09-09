@@ -7,20 +7,27 @@
 //
 
 #import "CHWAudioPlayer.h"
-#import "avcodec.h"
+// #import "avformat.h"
 #import <AudioToolbox/AudioToolbox.h>
+#import <AVFoundation/AVFoundation.h>
+#import "CHWVideoFrameFifo.h"
 
 static const int kNumAQBufs = 3;
 static const int kAudioBufferSeconds = 3;
 
-static void audioQueueOutputCallback(void *inClientData, AudioQueueRef inAQ,
+void audioQueueOutputCallback(void *inClientData, AudioQueueRef inAQ,
+                              AudioQueueBufferRef inBuffer);
+void audioQueueIsRunningCallback(void *inClientData, AudioQueueRef inAQ,
+                                 AudioQueuePropertyID inID);
+
+void audioQueueOutputCallback(void *inClientData, AudioQueueRef inAQ,
                               AudioQueueBufferRef inBuffer) {
     
     CHWAudioPlayer *audioPlayer = (__bridge CHWAudioPlayer*)inClientData;
     [audioPlayer audioQueueOutputCallback:inAQ inBuffer:inBuffer];
 }
 
-static void audioQueueIsRunningCallback(void *inClientData, AudioQueueRef inAQ,
+void audioQueueIsRunningCallback(void *inClientData, AudioQueueRef inAQ,
                                  AudioQueuePropertyID inID) {
     
     CHWAudioPlayer *audioPlayer = (__bridge CHWAudioPlayer*)inClientData;
@@ -35,14 +42,106 @@ static void audioQueueIsRunningCallback(void *inClientData, AudioQueueRef inAQ,
     AudioQueueBufferRef audioQueueBuffer[kNumAQBufs];
 }
 
+@property (nonatomic, retain) CHWVideoFrameFifo *audioFifo;
+@property (nonatomic, retain) CHWFrameSec *currentAudioFrame;
+
+@property (nonatomic, assign) BOOL isAudioQueueCreated;
+
 @end
 
 @implementation CHWAudioPlayer
 
-- (BOOL)createAudioQueueWithAVCodecContext:(AVCodecContext*)aAudioCodecContext
+- (id) initWithAVCodecContext:(AVCodecContext*)aAudioCodecContext AndAudioFifo:(CHWVideoFrameFifo*)audioFifo
 {
-    audioCodecContext = audioCodecContext;
+    if ( self = [super init] )
+    {
+        [self p_setupAudioSession];
+        
+        audioCodecContext = aAudioCodecContext;
+        self.audioFifo = audioFifo;
+        self.currentAudioFrame = nil;
+        self.state = CHW_AUDIO_STATE_INIT;
+        self.isAudioQueueCreated = NO;
+    }
+    
+    return self;
+}
 
+- (void) p_setupAudioSession
+{
+    NSError *error = nil;
+    AVAudioSession *audioSession = [AVAudioSession sharedInstance];
+    [audioSession setCategory:AVAudioSessionCategoryPlayback error:&error];
+    
+    /*
+    AudioSessionInitialize(NULL, NULL, NULL, NULL);
+    UInt32 category = kAudioSessionCategory_MediaPlayback; // plays through sleep lock and silent switch
+    AudioSessionSetProperty(kAudioSessionProperty_AudioCategory, sizeof(category), &category);
+    AudioSessionSetActive(true);
+     */
+    
+    if ( error )
+    {
+        NSLog( @"Failed to setup audio session, error: %@", error );
+    }
+    else
+    {
+        NSLog( @"Success to setup audio session" );
+    }
+}
+
+- (BOOL) play
+{
+    NSLog(@"play audio");
+    if ( !self.isAudioQueueCreated )
+    {
+        [self p_createAudioQueue];
+        
+        for (NSInteger i = 0; i < kNumAQBufs; ++i)
+        {
+            [self enqueueBuffer:audioQueueBuffer[i]];
+        }
+        
+        UInt32 outNumberOfFramesPrepared = 0;
+        OSStatus status = AudioQueuePrime( audioQueue, 0, &outNumberOfFramesPrepared );
+        if ( status != noErr )
+        {
+            NSLog( @"AudioQueuePrime Failed, error:%d", (int)status );
+            return NO;
+        }
+        NSLog( @"outNumberOfFramesPrepared = %u", (unsigned int)outNumberOfFramesPrepared );
+    }
+    OSStatus status = AudioQueueStart(audioQueue, NULL);
+    if ( status != noErr )
+    {
+        NSLog( @"AudioQueueStart Failed, error:%d", (int)status );
+        return NO;
+    }
+    self.state = CHW_AUDIO_STATE_PLAYING;
+    return YES;
+}
+
+- (BOOL) pause
+{
+    if ( self.state == CHW_AUDIO_STATE_PLAYING )
+    {
+        OSStatus status = AudioQueuePause( audioQueue );
+        if ( status != noErr )
+        {
+            NSLog( @"AudioQueuePause Failed, error:%d", (int)status );
+            return NO;
+        }
+        
+        self.state = CHW_AUDIO_STATE_PAUSE;
+        return YES;
+    }
+    
+    NSLog( @"AudioQueuePause Failed, due to not playing" );
+    return NO;
+}
+
+- (BOOL) p_createAudioQueue
+{
     audioStreamBasicDesc.mFormatID = -1;
     audioStreamBasicDesc.mSampleRate = audioCodecContext->sample_rate;
     
@@ -98,6 +197,17 @@ static void audioQueueIsRunningCallback(void *inClientData, AudioQueueRef inAQ,
         }
     }
     
+    AudioStreamBasicDescription format;
+    memset(&format, 0, sizeof(format));
+    format.mSampleRate          = 44100;
+    format.mFormatID            = kAudioFormatLinearPCM;
+    format.mFormatFlags         = kLinearPCMFormatFlagIsSignedInteger | kLinearPCMFormatFlagIsPacked;
+    format.mChannelsPerFrame    = 1;
+    format.mBitsPerChannel      = 16;
+    format.mBytesPerFrame       = (format.mBitsPerChannel / 8) * format.mChannelsPerFrame;
+    format.mFramesPerPacket     = 1;
+    format.mBytesPerPacket      = format.mBytesPerFrame * format.mFramesPerPacket;
+    
     //    if (audioStreamBasicDesc_.mFormatID != kAudioFormatULaw) {
     //        audioStreamBasicDesc_.mBytesPerPacket = 0;
     //        audioStreamBasicDesc_.mFramesPerPacket = _audioCodecContext->frame_size;
@@ -119,10 +229,15 @@ static void audioQueueIsRunningCallback(void *inClientData, AudioQueueRef inAQ,
     }
     
     for (NSInteger i = 0; i < kNumAQBufs; ++i) {
+        /*
         status = AudioQueueAllocateBufferWithPacketDescriptions(audioQueue,
                                                                 audioStreamBasicDesc.mSampleRate * kAudioBufferSeconds / 8,
                                                                 audioCodecContext->sample_rate * kAudioBufferSeconds / (audioCodecContext->frame_size + 1),
                                                                 &audioQueueBuffer[i]);
+         */
+        int inBufferByteSize = audioStreamBasicDesc.mSampleRate * kAudioBufferSeconds * 3 / 8;
+        NSLog( @"buffer size:%d", inBufferByteSize );
+        status = AudioQueueAllocateBuffer( audioQueue, inBufferByteSize, &audioQueueBuffer[i] );
         if (status != noErr) {
             NSLog(@"Could not allocate buffer.");
             return NO;
@@ -160,52 +275,37 @@ static void audioQueueIsRunningCallback(void *inClientData, AudioQueueRef inAQ,
         buffer->mAudioDataByteSize = 0;
         buffer->mPacketDescriptionCount = 0;
         
-        if (_streamer.audioPacketQueue.count <= 0) {
-            _streamer.emptyAudioBuffer = buffer;
+        if ( [self.audioFifo isEmpty] )
+        {
+            NSLog( @"audio fifo is empty when enqueueBuffer 1st called" );
             return status;
         }
         
-        _streamer.emptyAudioBuffer = nil;
-        
-        while (_streamer.audioPacketQueue.count && buffer->mPacketDescriptionCount < buffer->mPacketDescriptionCapacity) {
-            AVPacket *packet = [_streamer readPacket];
+        while ( YES )
+        {
+            if ( [self.audioFifo isEmpty] && self.currentAudioFrame == nil ) break;
             
-            if (buffer->mAudioDataBytesCapacity - buffer->mAudioDataByteSize >= packet->size) {
-                if (buffer->mPacketDescriptionCount == 0) {
-                    bufferStartTime.mSampleTime = packet->dts * _audioCodecContext->frame_size;
-                    bufferStartTime.mFlags = kAudioTimeStampSampleTimeValid;
-                }
-                
-                memcpy((uint8_t *)buffer->mAudioData + buffer->mAudioDataByteSize, packet->data, packet->size);
-                buffer->mPacketDescriptions[buffer->mPacketDescriptionCount].mStartOffset = buffer->mAudioDataByteSize;
-                buffer->mPacketDescriptions[buffer->mPacketDescriptionCount].mDataByteSize = packet->size;
-                buffer->mPacketDescriptions[buffer->mPacketDescriptionCount].mVariableFramesInPacket = _audioCodecContext->frame_size;
-                
-                buffer->mAudioDataByteSize += packet->size;
-                buffer->mPacketDescriptionCount++;
-                
-                
-                _streamer.audioPacketQueueSize -= packet->size;
-                
-                av_free_packet(packet);
+            if ( self.currentAudioFrame == nil )
+            {
+                self.currentAudioFrame = [self.audioFifo dequeue];
             }
-            else {
+            int decodedAudioDataSize = [[self.currentAudioFrame data] length];
+            if ( buffer->mAudioDataBytesCapacity - buffer->mAudioDataByteSize >= decodedAudioDataSize )
+            {
+                memcpy((uint8_t *)buffer->mAudioData + buffer->mAudioDataByteSize, [[self.currentAudioFrame data] bytes], decodedAudioDataSize );
+                buffer->mAudioDataByteSize += decodedAudioDataSize;
+                self.currentAudioFrame = nil;
+            }
+            else
+            {
                 break;
             }
         }
         
-        [decodeLock_ lock];
-        if (buffer->mPacketDescriptionCount > 0) {
-            status = AudioQueueEnqueueBuffer(audioQueue_, buffer, 0, NULL);
-            if (status != noErr) {
-                NSLog(@"Could not enqueue buffer.");
-            }
-        } else {
-            AudioQueueStop(audioQueue_, NO);
-            finished_ = YES;
+        status = AudioQueueEnqueueBuffer(audioQueue, buffer, 0, NULL);
+        if (status != noErr) {
+            NSLog(@"Could not enqueue buffer.");
         }
-        
-        [decodeLock_ unlock];
     }
     
     return status;

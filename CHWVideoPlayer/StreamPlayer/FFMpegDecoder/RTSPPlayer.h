@@ -5,38 +5,26 @@
 #import "swscale.h"
 #import <AudioToolbox/AudioQueue.h>
 #import <AudioToolbox/AudioToolbox.h>
-#import "CHWAvFifo.h"
+#import "CHWVideoFrameFifo.h"
 #import "CHWAVInfo.h"
+#import "CHWAudioPlayer.h"
 
-@interface RTSPPlayer : NSObject {
+@interface RTSPPlayer : NSObject
+{
 	AVFormatContext *pFormatCtx;
     AVFrame *pFrame;
     AVPacket packet;
 	AVPicture picture;
     AVPacket *_packet, _currentPacket;
-
-    //audio
-    NSLock *audioPacketQueueLock;
-    AVCodecContext *_audioCodecContext;
-    int16_t *_audioBuffer;
-    int audioPacketQueueSize;
-    NSMutableArray *audioPacketQueue;
-    AVStream *_audioStream;
-    NSUInteger _audioBufferSize;
-    BOOL _inBuffer;
 }
-
-@property (nonatomic, retain) NSMutableArray *audioPacketQueue;
-@property (nonatomic, assign) AVCodecContext *_audioCodecContext;
-@property (nonatomic, assign) AudioQueueBufferRef emptyAudioBuffer;
-@property (nonatomic, assign) int audioPacketQueueSize;
-@property (nonatomic, assign) AVStream *_audioStream;
 
 // Arton added -->
 
-@property (nonatomic, retain) CHWAvFifo *videoFifo;
-@property (nonatomic, retain) CHWAvFifo *audioFifo;
+@property (nonatomic, retain) CHWVideoFrameFifo *videoFifo;
+@property (nonatomic, retain) CHWVideoFrameFifo *audioFifo;
 @property (nonatomic, retain) CHWAVInfo *avInfo;
+
+@property (nonatomic, retain) CHWAudioPlayer *audioPlayer;
 
 // Arton added <--
 

@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Arton. All rights reserved.
 //
 
-#import "CHWAvFifo.h"
+#import "CHWVideoFrameFifo.h"
 
 @implementation CHWFrameSec
 
@@ -66,14 +66,14 @@
 
 @end
 
-@interface CHWAvFifo ()
+@interface CHWVideoFrameFifo ()
 
 @property (nonatomic, retain) NSLock *lock;
 @property (nonatomic, retain) CHWFrameSec *tailFrame; // invalid if frame count is 0
 
 @end
 
-@implementation CHWAvFifo
+@implementation CHWVideoFrameFifo
 
 - (id) init
 {
