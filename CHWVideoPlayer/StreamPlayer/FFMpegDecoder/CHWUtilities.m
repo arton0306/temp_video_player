@@ -60,25 +60,40 @@
     // [data writeToFile:fileName atomically:YES];
 }
 
-+(void)appendData:(NSData*)data ToFileInDocument:(NSString*)filename
++(void)appendData:(NSData*)data ToFile:(NSString*)filename
 {
-	NSString *fullpathFilename = [CHWUtilities documentsPath:filename];
-    
-    BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:fullpathFilename];
-
-    if ( fileExists )
+    BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:filename];
+    // NSAssert( fileExists, @"fatal error" );
+    if ( !fileExists )
     {
-        [data writeToFile:fullpathFilename atomically:NO];
-        NSLog( @"%@ does not exsits, we create one and write data into it", fullpathFilename );
+        [data writeToFile:filename atomically:NO];
+        NSLog( @"%@ does not exsits, we create one and write data into it", filename );
     }
     else
     {
-        NSLog( @"%@ exsits, we append data to it", fullpathFilename );
-        NSFileHandle *fileHandle = [NSFileHandle fileHandleForWritingAtPath:fullpathFilename];
+        NSLog( @"%@ exsits, we append data (size:%d) to it", filename, [data length] );
+        NSFileHandle *fileHandle = [NSFileHandle fileHandleForWritingAtPath:filename];
         [fileHandle seekToEndOfFile];
         [fileHandle writeData:data];
         [fileHandle closeFile];
     }
+}
+
++ (unsigned long long)getFileSizeInBytes:(NSString*)filePath
+{
+    NSFileManager *fm = [NSFileManager defaultManager];
+    NSAssert( [fm fileExistsAtPath:filePath], @"getFileSizeInBytes fatal error: file not exsits" );
+    
+    NSError *error = nil;
+    NSDictionary *fileDictionary = [fm attributesOfItemAtPath:filePath
+                                                        error:&error];
+    if (!error && fileDictionary)
+    {
+        return [fileDictionary fileSize];
+    }
+    
+    NSLog( @"getFileSizeInBytes error" );
+    return 0;
 }
 
 @end

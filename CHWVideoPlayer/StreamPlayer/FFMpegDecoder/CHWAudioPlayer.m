@@ -202,13 +202,26 @@ void audioQueueIsRunningCallback(void *inClientData, AudioQueueRef inAQ,
     memset(&format, 0, sizeof(format));
     format.mSampleRate          = 44100;
     format.mFormatID            = kAudioFormatLinearPCM;
-    // format.mFormatFlags         = kLinearPCMFormatFlagIsFloat;
-    format.mFormatFlags         = kLinearPCMFormatFlagIsSignedInteger | kLinearPCMFormatFlagIsPacked;
+    format.mFormatFlags         = kLinearPCMFormatFlagIsFloat;
+    //format.mFormatFlags         = kLinearPCMFormatFlagIsSignedInteger | kLinearPCMFormatFlagIsPacked;
+    format.mChannelsPerFrame    = 1;
     format.mBitsPerChannel      = 16;
     format.mBytesPerFrame       = (format.mBitsPerChannel / 8) * format.mChannelsPerFrame;
-    format.mChannelsPerFrame    = 1;
     format.mFramesPerPacket     = 1;
     format.mBytesPerPacket      = format.mBytesPerFrame * format.mFramesPerPacket;
+    
+    /*
+     AudioStreamBasicDescription format;
+     memset(&format, 0, sizeof(format));
+     format.mSampleRate          = 44100;
+     format.mFormatID            = kAudioFormatLinearPCM;
+     format.mFormatFlags         = kLinearPCMFormatFlagIsSignedInteger | kLinearPCMFormatFlagIsPacked;
+     format.mChannelsPerFrame    = 1;
+     format.mBitsPerChannel      = 16;
+     format.mBytesPerFrame       = (format.mBitsPerChannel / 8) * format.mChannelsPerFrame;
+     format.mFramesPerPacket     = 1;
+     format.mBytesPerPacket      = format.mBytesPerFrame * format.mFramesPerPacket;
+     */
     
     //    if (audioStreamBasicDesc_.mFormatID != kAudioFormatULaw) {
     //        audioStreamBasicDesc_.mBytesPerPacket = 0;
@@ -273,7 +286,30 @@ void audioQueueIsRunningCallback(void *inClientData, AudioQueueRef inAQ,
 - (void) p_debugAudioStream:(NSData*)data
 {
     static NSString *debug_audio_file = @"audio_stream.pcm";
-    [CHWUtilities appendData:data ToFileInDocument:debug_audio_file];
+    NSString *fullpathFilename = [CHWUtilities documentsPath:debug_audio_file];
+
+    // if file exsits, clear all contents
+    {
+        static BOOL firstRun = YES;
+        if ( firstRun )
+        {
+            NSData *emptyData = [NSData new];
+            [emptyData writeToFile:fullpathFilename atomically:NO];
+            
+            NSError *error = nil;
+            NSDictionary *fileDictionary = [[NSFileManager defaultManager] attributesOfItemAtPath:fullpathFilename
+                                                                                            error:&error];
+            NSAssert( error == nil && [fileDictionary fileSize] == 0, @"fatal error" );
+            
+            firstRun = NO;
+        }
+    }
+    
+    long long beforeFilesize = [CHWUtilities getFileSizeInBytes:fullpathFilename];
+    [CHWUtilities appendData:data ToFile:fullpathFilename];
+    long long afterFilesize = [CHWUtilities getFileSizeInBytes:fullpathFilename];
+    
+    NSLog( @"%@ file size : %lld => %lld", fullpathFilename, beforeFilesize, afterFilesize );
 }
 
 - (OSStatus)enqueueBuffer:(AudioQueueBufferRef)buffer
@@ -305,14 +341,15 @@ void audioQueueIsRunningCallback(void *inClientData, AudioQueueRef inAQ,
             {
                 memcpy((uint8_t *)buffer->mAudioData + buffer->mAudioDataByteSize, [self.currentAudioFrame.data bytes], decodedAudioDataSize );
                 buffer->mAudioDataByteSize += decodedAudioDataSize;
-                self.currentAudioFrame = nil;
                 
                 // for dump audio raw data to debug
-                const BOOL AUDIO_STREAM_DUMP = YES;
+                const BOOL AUDIO_STREAM_DUMP = NO;
                 if ( AUDIO_STREAM_DUMP )
                 {
                     [self p_debugAudioStream:self.currentAudioFrame.data];
                 }
+                
+                self.currentAudioFrame = nil;                
             }
             else
             {

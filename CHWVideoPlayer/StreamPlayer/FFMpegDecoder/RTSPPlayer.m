@@ -343,7 +343,7 @@ AVCodecContext *p_getCodecCtxWithCodec( AVFormatContext * aFormatCtx, int aStrea
                     NSData *ppmFrame = [self p_convertToPpmFrame:self.frameRGB withWidth:self.outputWidth andHeight:self.outputHeight];
                     [self p_savePPM:ppmFrame index:videoFrameIndex];
                 }
-                NSLog( @"video frame, packet ndx:%4d, video frame ndx:%4d, dts:%8.4lf, pts:%8.4lf", packetIndex, videoFrameIndex, dtsSec, ptsSec );
+                //NSLog( @"video frame, packet ndx:%4d, video frame ndx:%4d, dts:%8.4lf, pts:%8.4lf", packetIndex, videoFrameIndex, dtsSec, ptsSec );
                 
                 // fill in our ppm buffer
                 // TODO: the origin code use ptsSec, check it
@@ -370,7 +370,7 @@ AVCodecContext *p_getCodecCtxWithCodec( AVFormatContext * aFormatCtx, int aStrea
             uint8_t * const packetDataHead = packet.data;
             while ( packet.size > 0 )
             {
-                // Decod audio frame
+                // Decode audio frame
                 int const bytesUsed = avcodec_decode_audio4( _audioCodecCtx, decodedFrame, &frameFinished, &packet );
                 if ( bytesUsed < 0 )
                 {
@@ -381,11 +381,17 @@ AVCodecContext *p_getCodecCtxWithCodec( AVFormatContext * aFormatCtx, int aStrea
                 {
                     if ( frameFinished )
                     {
+                        /*
+                        NSLog( @"channels:%d nb_samples:%d sample_fmt:%d",
+                              _audioCodecCtx->channels,
+                              decodedFrame->nb_samples,
+                              _audioCodecCtx->sample_fmt );
+                         */
                         int const data_size = av_samples_get_buffer_size(NULL, _audioCodecCtx->channels,
                                                                          decodedFrame->nb_samples,
                                                                          _audioCodecCtx->sample_fmt, 1);
-                        
-                        NSData *data = [NSData dataWithBytes:decodedFrame->data[0] length:data_size];
+                        // TODO: investigate why the back-half in decodedFrame->data[0] are all zero
+                        NSData *data = [NSData dataWithBytes:decodedFrame->data[0] length:data_size / 2];
                         double const dtsSec = packet.dts * av_q2d( pFormatCtx->streams[self.audioStreamIndex]->time_base );
                         double const ptsSec = packet.pts * av_q2d( pFormatCtx->streams[self.audioStreamIndex]->time_base );
                         [self.audioFifo enqueue:[[CHWFrameSec alloc] initWithData:data AndPts:ptsSec]];
@@ -410,8 +416,15 @@ AVCodecContext *p_getCodecCtxWithCodec( AVFormatContext * aFormatCtx, int aStrea
                         
                         DEBUG() << "p ndx:" << packetIndex << "     audio frame ndx:" << audioFrameIndex << "     PTS:" << packet.pts << "     DTS:" << packet.dts << " TimeBase:" << av_q2d(formatCtx->streams[audioStreamIndex]->time_base) << " *dts:" << av_q2d(formatCtx->streams[audioStreamIndex]->time_base) * packet.pts;
                         */
+                        
+                        BOOL AUDIO_DEBUG = NO;
+                        if ( AUDIO_DEBUG )
+                        {
+                            //NSLog( @"%@", data );
+                            [self p_debugAudioStream:data];
+                        }
 
-                        NSLog( @"audio frame, packet ndx:%4d, audio frame ndx:%4d, dts:%8.4lf, pts:%8.4lf", packetIndex, audioFrameIndex, dtsSec, ptsSec );
+                        //NSLog( @"audio frame, packet ndx:%4d, audio frame ndx:%4d, dts:%8.4lf, pts:%8.4lf", packetIndex, audioFrameIndex, dtsSec, ptsSec );
                         ++audioFrameIndex;
                     }
                     else
@@ -474,6 +487,36 @@ AVCodecContext *p_getCodecCtxWithCodec( AVFormatContext * aFormatCtx, int aStrea
 	avcodec_flush_buffers(self.videoCodecCtx);
 }
 
+#pragma mark - for debug
+- (void) p_debugAudioStream:(NSData*)data
+{
+    static NSString *debug_audio_file = @"decode_audio_stream.pcm";
+    NSString *fullpathFilename = [CHWUtilities documentsPath:debug_audio_file];
+    
+    // if file exsits, clear all contents
+    {
+        static BOOL firstRun = YES;
+        if ( firstRun )
+        {
+            NSData *emptyData = [NSData new];
+            [emptyData writeToFile:fullpathFilename atomically:NO];
+            
+            NSError *error = nil;
+            NSDictionary *fileDictionary = [[NSFileManager defaultManager] attributesOfItemAtPath:fullpathFilename
+                                                                                            error:&error];
+            NSAssert( error == nil && [fileDictionary fileSize] == 0, @"fatal error" );
+            
+            firstRun = NO;
+        }
+    }
+    
+    long long beforeFilesize = [CHWUtilities getFileSizeInBytes:fullpathFilename];
+    [CHWUtilities appendData:data ToFile:fullpathFilename];
+    long long afterFilesize = [CHWUtilities getFileSizeInBytes:fullpathFilename];
+    
+    NSLog( @"%@ file size : %lld => %lld", fullpathFilename, beforeFilesize, afterFilesize );
+}
+
 - (void)p_savePPM:(NSData*)data index:(int)iFrame
 {
 	NSString *fileName;
@@ -482,6 +525,7 @@ AVCodecContext *p_getCodecCtxWithCodec( AVFormatContext * aFormatCtx, int aStrea
     [data writeToFile:fileName atomically:YES];
 }
 
+#pragma mark - interface
 - (double) nextVideoFrameTime
 {
     CHWFrameSec *frameSec = [self.videoFifo front];

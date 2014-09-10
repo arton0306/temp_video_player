@@ -28,6 +28,7 @@
 +(NSString *)bundlePath:(NSString *)fileName;
 +(NSString *)documentsPath:(NSString *)fileName;
 +(NSMutableData*)ppmDataFromRgbData:(NSData*)frameData AndWidth:(int)width AndHeight:(int)height;
-+(void)appendData:(NSData*)data ToFileInDocument:(NSString*)filename;
++(void)appendData:(NSData*)data ToFile:(NSString*)filename;
++ (unsigned long long)getFileSizeInBytes:(NSString*)filePath;
 
 @end
