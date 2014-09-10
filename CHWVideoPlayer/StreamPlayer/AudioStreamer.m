@@ -9,14 +9,14 @@ void audioQueueIsRunningCallback(void *inClientData, AudioQueueRef inAQ,
 void audioQueueOutputCallback(void *inClientData, AudioQueueRef inAQ,
   AudioQueueBufferRef inBuffer) {
 
-    AudioStreamer *audioController = (AudioStreamer*)inClientData;
+    AudioStreamer *audioController = (__bridge AudioStreamer*)inClientData;
     [audioController audioQueueOutputCallback:inAQ inBuffer:inBuffer];
 }
 
 void audioQueueIsRunningCallback(void *inClientData, AudioQueueRef inAQ,
   AudioQueuePropertyID inID) {
 
-    AudioStreamer *audioController = (AudioStreamer*)inClientData;
+    AudioStreamer *audioController = (__bridge AudioStreamer*)inClientData;
     [audioController audioQueueIsRunningCallback];
 }
 
@@ -44,7 +44,7 @@ void audioQueueIsRunningCallback(void *inClientData, AudioQueueRef inAQ,
 - (void)dealloc
 {
     [self removeAudioQueue];
-    [super dealloc];
+    //[super dealloc];
 }
 
 - (IBAction)playAudio:(UIButton*)sender
@@ -96,7 +96,7 @@ void audioQueueIsRunningCallback(void *inClientData, AudioQueueRef inAQ,
 
     if (decodeLock_) {
         [decodeLock_ unlock];
-        [decodeLock_ release];
+        //[decodeLock_ release];
         decodeLock_ = nil;
     }
     
@@ -164,13 +164,13 @@ void audioQueueIsRunningCallback(void *inClientData, AudioQueueRef inAQ,
 //        audioStreamBasicDesc_.mBitsPerChannel = 0;        
 //    }
     
-    OSStatus status = AudioQueueNewOutput(&audioStreamBasicDesc_, audioQueueOutputCallback, (void*)self, NULL, NULL, 0, &audioQueue_);
+    OSStatus status = AudioQueueNewOutput(&audioStreamBasicDesc_, audioQueueOutputCallback, (__bridge void*)self, NULL, NULL, 0, &audioQueue_);
     if (status != noErr) {
       NSLog(@"Could not create new output.");
       return NO;
     }
 
-    status = AudioQueueAddPropertyListener(audioQueue_, kAudioQueueProperty_IsRunning, audioQueueIsRunningCallback, (void*)self);
+    status = AudioQueueAddPropertyListener(audioQueue_, kAudioQueueProperty_IsRunning, audioQueueIsRunningCallback, (__bridge void*)self);
     if (status != noErr) {
       NSLog(@"Could not add propery listener. (kAudioQueueProperty_IsRunning)");
       return NO;
@@ -203,7 +203,7 @@ void audioQueueIsRunningCallback(void *inClientData, AudioQueueRef inAQ,
     
     if (decodeLock_) {
         [decodeLock_ unlock];
-        [decodeLock_ release];
+        //[decodeLock_ release];
         decodeLock_ = nil;
     }
 }

@@ -18,19 +18,19 @@ static BOOL isUseDescription = NO;
 static const int kNumAQBufs = 3;
 static const int kAudioBufferSeconds = 3;
 
-void audioQueueOutputCallback(void *inClientData, AudioQueueRef inAQ,
+static void audioQueueOutputCallback(void *inClientData, AudioQueueRef inAQ,
                               AudioQueueBufferRef inBuffer);
-void audioQueueIsRunningCallback(void *inClientData, AudioQueueRef inAQ,
+static void audioQueueIsRunningCallback(void *inClientData, AudioQueueRef inAQ,
                                  AudioQueuePropertyID inID);
 
-void audioQueueOutputCallback(void *inClientData, AudioQueueRef inAQ,
+static void audioQueueOutputCallback(void *inClientData, AudioQueueRef inAQ,
                               AudioQueueBufferRef inBuffer) {
     
     CHWAudioPlayer *audioPlayer = (__bridge CHWAudioPlayer*)inClientData;
     [audioPlayer audioQueueOutputCallback:inAQ inBuffer:inBuffer];
 }
 
-void audioQueueIsRunningCallback(void *inClientData, AudioQueueRef inAQ,
+static void audioQueueIsRunningCallback(void *inClientData, AudioQueueRef inAQ,
                                  AudioQueuePropertyID inID) {
     
     CHWAudioPlayer *audioPlayer = (__bridge CHWAudioPlayer*)inClientData;

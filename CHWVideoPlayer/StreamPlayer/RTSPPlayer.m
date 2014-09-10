@@ -144,7 +144,7 @@
 	return self;
 	
 initError:
-	[self release];
+	//[self release];
 	return nil;
 }
 
@@ -199,16 +199,16 @@ initError:
     if (pFormatCtx) avformat_close_input(&pFormatCtx);
 
     [_audioController _stopAudio];
-    [_audioController release];
+    //[_audioController release];
     _audioController = nil;
 	
-    [audioPacketQueue release];
+    //[audioPacketQueue release];
     audioPacketQueue = nil;
     
-    [audioPacketQueueLock release];
+    //[audioPacketQueueLock release];
     audioPacketQueueLock = nil;
     
-	[super dealloc];
+	//[super dealloc];
 }
 
 - (BOOL)stepFrame
@@ -306,20 +306,20 @@ initError:
         }
         
         if (audioPacketQueue) {
-            [audioPacketQueue release];
+            //[audioPacketQueue release];
             audioPacketQueue = nil;
         }        
         audioPacketQueue = [[NSMutableArray alloc] init];
         
         if (audioPacketQueueLock) {
-            [audioPacketQueueLock release];
+            //[audioPacketQueueLock release];
             audioPacketQueueLock = nil;
         }
         audioPacketQueueLock = [[NSLock alloc] init];
         
         if (_audioController) {
             [_audioController _stopAudio];
-            [_audioController release];
+            //[_audioController release];
             _audioController = nil;
         }
         _audioController = [[AudioStreamer alloc] initWithStreamer:self];
