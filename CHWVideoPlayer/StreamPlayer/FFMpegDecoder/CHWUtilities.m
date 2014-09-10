@@ -60,25 +60,6 @@
     // [data writeToFile:fileName atomically:YES];
 }
 
-+(void)appendData:(NSData*)data ToFile:(NSString*)filename
-{
-    BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:filename];
-    // NSAssert( fileExists, @"fatal error" );
-    if ( !fileExists )
-    {
-        [data writeToFile:filename atomically:NO];
-        NSLog( @"%@ does not exsits, we create one and write data into it", filename );
-    }
-    else
-    {
-        NSLog( @"%@ exsits, we append data (size:%d) to it", filename, [data length] );
-        NSFileHandle *fileHandle = [NSFileHandle fileHandleForWritingAtPath:filename];
-        [fileHandle seekToEndOfFile];
-        [fileHandle writeData:data];
-        [fileHandle closeFile];
-    }
-}
-
 + (unsigned long long)getFileSizeInBytes:(NSString*)filePath
 {
     NSFileManager *fm = [NSFileManager defaultManager];
@@ -94,6 +75,36 @@
     
     NSLog( @"getFileSizeInBytes error" );
     return 0;
+}
+
++ (void)appendData:(NSData*)data ToFile:(NSString*)filename
+{
+    BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:filename];
+
+    if ( !fileExists )
+    {
+        [data writeToFile:filename atomically:NO];
+        NSLog( @"%@ does not exsits, we create one and write data into it", filename );
+    }
+    else
+    {
+        NSLog( @"%@ exsits, we append data (size:%d) to it", filename, [data length] );
+        NSFileHandle *fileHandle = [NSFileHandle fileHandleForWritingAtPath:filename];
+        [fileHandle seekToEndOfFile];
+        [fileHandle writeData:data];
+        [fileHandle closeFile];
+    }
+}
+
++ (void) purgeFile:(NSString*)filename;
+{
+    NSData *emptyData = [NSData new];
+    [emptyData writeToFile:filename atomically:NO];
+    
+    NSError *error = nil;
+    NSDictionary *fileDictionary = [[NSFileManager defaultManager] attributesOfItemAtPath:filename
+                                                                                    error:&error];
+    NSAssert( error == nil && [fileDictionary fileSize] == 0, @"fatal error" );
 }
 
 @end

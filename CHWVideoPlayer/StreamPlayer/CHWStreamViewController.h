@@ -10,7 +10,7 @@
 #import <UIKit/UIKit.h>
 #import "CHWVideoProgressView.h"
 
-@class RTSPPlayer;
+@class CHWMoviePlayer;
 
 @interface CHWStreamViewController : UIViewController
 
@@ -20,7 +20,7 @@
 @property (nonatomic, retain) IBOutlet UILabel *currentLabel;
 @property (nonatomic, retain) IBOutlet UIButton *playButton;
 @property (nonatomic, retain) IBOutlet CHWVideoProgressView *playtimeProgress;
-@property (nonatomic, retain) RTSPPlayer *video;
+@property (nonatomic, retain) CHWMoviePlayer *video;
 
 - (IBAction)playButtonAction:(id)sender;
 

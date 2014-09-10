@@ -233,7 +233,7 @@ void audioQueueIsRunningCallback(void *inClientData, AudioQueueRef inAQ,
     
     //OSStatus status = AudioQueueNewOutput( &audioStreamBasicDesc, audioQueueOutputCallback, (__bridge void*)self, NULL, NULL, 0, &audioQueue );
     //OSStatus status = AudioQueueNewOutput( &format, audioQueueOutputCallback, (__bridge void*)self, CFRunLoopGetCurrent(), kCFRunLoopCommonModes, 0, &audioQueue );
-    OSStatus status = AudioQueueNewOutput( &format, audioQueueOutputCallback, (__bridge void*)self, NULL, NULL, 0, &audioQueue );
+    OSStatus status = AudioQueueNewOutput( &audioStreamBasicDesc, audioQueueOutputCallback, (__bridge void*)self, NULL, NULL, 0, &audioQueue );
     if (status != noErr) {
         NSLog(@"Could not create new audio queue. error = %d", (int)status );
         return NO;
@@ -252,8 +252,9 @@ void audioQueueIsRunningCallback(void *inClientData, AudioQueueRef inAQ,
                                                                 audioCodecContext->sample_rate * kAudioBufferSeconds / (audioCodecContext->frame_size + 1),
                                                                 &audioQueueBuffer[i]);
          */
-        int inBufferByteSize = audioStreamBasicDesc.mSampleRate * kAudioBufferSeconds * 3 / 8;
-        NSLog( @"buffer size:%d", inBufferByteSize );
+        //int inBufferByteSize = audioStreamBasicDesc.mSampleRate * kAudioBufferSeconds * 3 / 8;
+        int inBufferByteSize = 9192;
+        //NSLog( @"buffer size:%d", inBufferByteSize );
         status = AudioQueueAllocateBuffer( audioQueue, inBufferByteSize, &audioQueueBuffer[i] );
         if (status != noErr) {
             NSLog(@"Could not allocate buffer.");
@@ -335,6 +336,7 @@ void audioQueueIsRunningCallback(void *inClientData, AudioQueueRef inAQ,
             if ( self.currentAudioFrame == nil )
             {
                 self.currentAudioFrame = [self.audioFifo dequeue];
+                //NSLog( @"audio frame count=%d", self.audioFifo.frameCount );
             }
             int decodedAudioDataSize = [[self.currentAudioFrame data] length];
             if ( buffer->mAudioDataBytesCapacity - buffer->mAudioDataByteSize >= decodedAudioDataSize )

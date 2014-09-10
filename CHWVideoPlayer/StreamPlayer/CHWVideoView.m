@@ -7,7 +7,7 @@
 //
 
 #import "CHWVideoView.h"
-#import "RTSPPlayer.h"
+#import "CHWMoviePlayer.h"
 
 @interface CHWVideoView()
 
@@ -19,7 +19,7 @@
 @property (nonatomic, copy) VoidHandler seekDoneHandler;
 
 @property (nonatomic, retain) NSTimer *nextFrameTimer;
-@property (nonatomic, retain) RTSPPlayer *video;
+@property (nonatomic, retain) CHWMoviePlayer *video;
 
 @end
 

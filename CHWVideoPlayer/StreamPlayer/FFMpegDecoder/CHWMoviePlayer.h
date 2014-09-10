@@ -9,7 +9,7 @@
 #import "CHWAVInfo.h"
 #import "CHWAudioPlayer.h"
 
-@interface RTSPPlayer : NSObject
+@interface CHWMoviePlayer : NSObject
 {
 	AVFormatContext *pFormatCtx;
     AVFrame *pFrame;
@@ -30,16 +30,14 @@
 
 /* Seek to closest keyframe near specified time */
 -(void)seekTime:(double)seconds;
--(void)closeAudio;
-
-- (AVPacket*)readPacket;
 
 // Arton added -->
+- (id)initWithVideo:(NSString *)moviePath usesTcp:(BOOL)usesTcp decodeAudioBySoftware:(BOOL)bDecodeAudioBySoftware;
+
 - (void) dumpVideoInfo;
 - (void) p_dumpAudioInfo;
 - (double) nextVideoFrameTime;
 - (CHWFrameSec*) getNextVideoFrameSec;
--(id)initWithVideo:(NSString *)moviePath usesTcp:(BOOL)usesTcp;
 - (void) setOutputWidth:(int)width andHeight:(int)height;
 - (void) startDecode;
 // Arton added <--

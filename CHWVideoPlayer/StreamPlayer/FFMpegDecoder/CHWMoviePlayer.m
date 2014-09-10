@@ -1,11 +1,11 @@
-#import "RTSPPlayer.h"
+#import "CHWMoviePlayer.h"
 #import "CHWUtilities.h"
 #import "CHWAVInfo.h"
 #import "CHWVideoFrameFifo.h"
 
 #define BITS_PER_BYTES 8
 
-@interface RTSPPlayer ()
+@interface CHWMoviePlayer ()
 
 @property (nonatomic, assign) AVCodecContext *videoCodecCtx;
 @property (nonatomic, assign) AVCodecContext *audioCodecCtx;
@@ -19,10 +19,12 @@
 @property (nonatomic, assign) AVFrame *frameRGB;
 @property (nonatomic, assign) uint8_t *frameRGB_Buffer;
 
+@property (nonatomic, assign) BOOL isDecodeAudioBySoftware;
+
 -(void)savePicture:(AVPicture)pFrame width:(int)width height:(int)height index:(int)iFrame;
 @end
 
-@implementation RTSPPlayer
+@implementation CHWMoviePlayer
 
 #pragma mark - setter and getter
 
@@ -30,12 +32,13 @@
 
 
 #pragma mark - init and dealloc
-- (id)initWithVideo:(NSString *)moviePath usesTcp:(BOOL)usesTcp
+- (id)initWithVideo:(NSString *)moviePath usesTcp:(BOOL)usesTcp decodeAudioBySoftware:(BOOL)bDecodeAudioBySoftware
 {
 	if (!(self=[super init])) return nil;
  
     self.videoFifo = [CHWVideoFrameFifo new];
     self.audioFifo = [CHWVideoFrameFifo new];
+    self.isDecodeAudioBySoftware = bDecodeAudioBySoftware;
     
     // Register all formats and codecs
     avcodec_register_all();
@@ -203,7 +206,7 @@ AVCodecContext *p_getCodecCtxWithCodec( AVFormatContext * aFormatCtx, int aStrea
 
 - (BOOL) p_isDecodedFrameEnough
 {
-    return ( self.videoFifo.frameCount >= 5 ) && ( [self.audioFifo getFrameTotalTimeInSec] > 1.5 );
+    return ( self.videoFifo.frameCount >= 20 ) && ( [self.audioFifo getFrameTotalTimeInSec] > 3 );
     //return ( self.videoFifo.frameCount >= 3 );
 }
 
@@ -364,7 +367,26 @@ AVCodecContext *p_getCodecCtxWithCodec( AVFormatContext * aFormatCtx, int aStrea
             // Free the packet that was allocated by av_read_frame
             av_free_packet( &packet );
         }
-        else if ( packet.stream_index == self.audioStreamIndex )
+        else if ( packet.stream_index == self.audioStreamIndex && !self.isDecodeAudioBySoftware )
+        {
+            NSData *data = [NSData dataWithBytes:packet.data length:packet.size];
+            double const dtsSec = packet.dts * av_q2d( pFormatCtx->streams[self.audioStreamIndex]->time_base );
+            double const ptsSec = packet.pts * av_q2d( pFormatCtx->streams[self.audioStreamIndex]->time_base );
+            [self.audioFifo enqueue:[[CHWFrameSec alloc] initWithData:data AndPts:ptsSec]];
+            //NSLog( @"self.audioFifo frame count: %d", self.audioFifo.frameCount );
+            //NSLog( @"audio frame, packet ndx:%4d, audio frame ndx:%4d, dts:%8.4lf, pts:%8.4lf", packetIndex, audioFrameIndex, dtsSec, ptsSec );
+            
+            BOOL AUDIO_DEBUG = YES;
+            if ( AUDIO_DEBUG )
+            {
+                //NSLog( @"%@", data );
+                [self p_debugAudioStream:data];
+            }
+            
+            ++audioFrameIndex;
+            av_free_packet( &packet );
+        }
+        else if ( packet.stream_index == self.audioStreamIndex && self.isDecodeAudioBySoftware )
         {
             avcodec_get_frame_defaults( decodedFrame );
             uint8_t * const packetDataHead = packet.data;
@@ -395,27 +417,6 @@ AVCodecContext *p_getCodecCtxWithCodec( AVFormatContext * aFormatCtx, int aStrea
                         double const dtsSec = packet.dts * av_q2d( pFormatCtx->streams[self.audioStreamIndex]->time_base );
                         double const ptsSec = packet.pts * av_q2d( pFormatCtx->streams[self.audioStreamIndex]->time_base );
                         [self.audioFifo enqueue:[[CHWFrameSec alloc] initWithData:data AndPts:ptsSec]];
-                        
-                        /*
-                        // apply audio effect and push audio data to fifo
-                        // notice that we don't push meaningful time value with the stream into the fifo
-                        vector<uint8> decodedStream( data_size, 0 );
-                        memcpy( &decodedStream[0], decodedFrame->data[0], data_size );
-                        setAudioEffect( audioCodecCtx->channels );
-                        
-                        if ( mAudioFifo.isEmpty() )
-                            mFirstAudioFrameTime = av_q2d(formatCtx->streams[audioStreamIndex]->time_base) * packet.pts;
-                        
-                        vector<uint8> tunedAudioStream = mAudioTuner.process( decodedStream );
-                        if ( tunedAudioStream.size() != 0 )
-                            mAudioFifo.push( tunedAudioStream, 0.0 ); // the audio time frame is dummy
-                        //mAudioFifo.push( decodedStream, 0.0 ); // the audio time frame is dummy
-                        
-                        if ( isAvDumpNeeded )
-                            appendAudioPcmToFile( decodedFrame->data[0], data_size, (mFileName + ".pcm").toStdString().c_str() ); // this will spend lots time, which will cause the delay in video
-                        
-                        DEBUG() << "p ndx:" << packetIndex << "     audio frame ndx:" << audioFrameIndex << "     PTS:" << packet.pts << "     DTS:" << packet.dts << " TimeBase:" << av_q2d(formatCtx->streams[audioStreamIndex]->time_base) << " *dts:" << av_q2d(formatCtx->streams[audioStreamIndex]->time_base) * packet.pts;
-                        */
                         
                         BOOL AUDIO_DEBUG = NO;
                         if ( AUDIO_DEBUG )
@@ -490,31 +491,21 @@ AVCodecContext *p_getCodecCtxWithCodec( AVFormatContext * aFormatCtx, int aStrea
 #pragma mark - for debug
 - (void) p_debugAudioStream:(NSData*)data
 {
-    static NSString *debug_audio_file = @"decode_audio_stream.pcm";
-    NSString *fullpathFilename = [CHWUtilities documentsPath:debug_audio_file];
+    static NSString *debug_audio_file = @"rtspplayer_audio_stream.pcm";
+    NSString *saveFilename = [CHWUtilities documentsPath:debug_audio_file];
     
-    // if file exsits, clear all contents
+    static BOOL firstRun = YES;
+    if ( firstRun )
     {
-        static BOOL firstRun = YES;
-        if ( firstRun )
-        {
-            NSData *emptyData = [NSData new];
-            [emptyData writeToFile:fullpathFilename atomically:NO];
-            
-            NSError *error = nil;
-            NSDictionary *fileDictionary = [[NSFileManager defaultManager] attributesOfItemAtPath:fullpathFilename
-                                                                                            error:&error];
-            NSAssert( error == nil && [fileDictionary fileSize] == 0, @"fatal error" );
-            
-            firstRun = NO;
-        }
+        [CHWUtilities purgeFile:saveFilename];
+        firstRun = NO;
     }
     
-    long long beforeFilesize = [CHWUtilities getFileSizeInBytes:fullpathFilename];
-    [CHWUtilities appendData:data ToFile:fullpathFilename];
-    long long afterFilesize = [CHWUtilities getFileSizeInBytes:fullpathFilename];
+    long long beforeFilesize = [CHWUtilities getFileSizeInBytes:saveFilename];
+    [CHWUtilities appendData:data ToFile:saveFilename];
+    long long afterFilesize = [CHWUtilities getFileSizeInBytes:saveFilename];
     
-    NSLog( @"%@ file size : %lld => %lld", fullpathFilename, beforeFilesize, afterFilesize );
+    NSLog( @"%@ file size : %lld => %lld", saveFilename, beforeFilesize, afterFilesize );
 }
 
 - (void)p_savePPM:(NSData*)data index:(int)iFrame
