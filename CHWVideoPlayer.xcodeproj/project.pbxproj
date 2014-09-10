@@ -44,6 +44,10 @@
 		B97A35B019B9723C00030116 /* libbz2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = B97A35AF19B9723C00030116 /* libbz2.dylib */; };
 		B97A35B219B9724600030116 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = B97A35B119B9724600030116 /* libz.dylib */; };
 		B97A35B519B9951900030116 /* CHWAudioPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = B97A35B419B9951900030116 /* CHWAudioPlayer.m */; };
+		B9C8A17C19C0AB9900E3DC38 /* DFUViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B9C8A17B19C0AB9900E3DC38 /* DFUViewController.m */; };
+		B9C8A18319C0ABA700E3DC38 /* AudioStreamer.m in Sources */ = {isa = PBXBuildFile; fileRef = B9C8A17E19C0ABA700E3DC38 /* AudioStreamer.m */; };
+		B9C8A18419C0ABA700E3DC38 /* RTSPPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = B9C8A18019C0ABA700E3DC38 /* RTSPPlayer.m */; };
+		B9C8A18519C0ABA700E3DC38 /* Utilities.m in Sources */ = {isa = PBXBuildFile; fileRef = B9C8A18219C0ABA700E3DC38 /* Utilities.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -183,6 +187,14 @@
 		B97A35B119B9724600030116 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		B97A35B319B9951900030116 /* CHWAudioPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CHWAudioPlayer.h; sourceTree = "<group>"; };
 		B97A35B419B9951900030116 /* CHWAudioPlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CHWAudioPlayer.m; sourceTree = "<group>"; };
+		B9C8A17A19C0AB9900E3DC38 /* DFUViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DFUViewController.h; sourceTree = "<group>"; };
+		B9C8A17B19C0AB9900E3DC38 /* DFUViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DFUViewController.m; sourceTree = "<group>"; };
+		B9C8A17D19C0ABA700E3DC38 /* AudioStreamer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioStreamer.h; sourceTree = "<group>"; };
+		B9C8A17E19C0ABA700E3DC38 /* AudioStreamer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AudioStreamer.m; sourceTree = "<group>"; };
+		B9C8A17F19C0ABA700E3DC38 /* RTSPPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RTSPPlayer.h; sourceTree = "<group>"; };
+		B9C8A18019C0ABA700E3DC38 /* RTSPPlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RTSPPlayer.m; sourceTree = "<group>"; };
+		B9C8A18119C0ABA700E3DC38 /* Utilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Utilities.h; sourceTree = "<group>"; };
+		B9C8A18219C0ABA700E3DC38 /* Utilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Utilities.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -261,7 +273,7 @@
 				B97A350319B967D800030116 /* CHWViewController.m */,
 				B97A350519B967D800030116 /* Images.xcassets */,
 				B97A352319B9696C00030116 /* resource */,
-				B97A352719B9696C00030116 /* StreamPlayer */,
+				B97A352719B9696C00030116 /* MoviePlayer */,
 				B97A34F419B967D800030116 /* Supporting Files */,
 			);
 			path = CHWVideoPlayer;
@@ -306,10 +318,11 @@
 			path = resource;
 			sourceTree = "<group>";
 		};
-		B97A352719B9696C00030116 /* StreamPlayer */ = {
+		B97A352719B9696C00030116 /* MoviePlayer */ = {
 			isa = PBXGroup;
 			children = (
-				B97A352819B9696C00030116 /* FFMpegDecoder */,
+				B9C8A17919C0AB8400E3DC38 /* 3rd Player */,
+				B97A352819B9696C00030116 /* CHWMovieDecodeWorker */,
 				B97A353519B9696C00030116 /* FFMpegiOS */,
 				B97A359219B9696C00030116 /* CHWQueue.h */,
 				B97A359319B9696C00030116 /* CHWQueue.m */,
@@ -320,10 +333,11 @@
 				B97A359819B9696C00030116 /* CHWVideoView.h */,
 				B97A359919B9696C00030116 /* CHWVideoView.m */,
 			);
+			name = MoviePlayer;
 			path = StreamPlayer;
 			sourceTree = "<group>";
 		};
-		B97A352819B9696C00030116 /* FFMpegDecoder */ = {
+		B97A352819B9696C00030116 /* CHWMovieDecodeWorker */ = {
 			isa = PBXGroup;
 			children = (
 				B97A352B19B9696C00030116 /* FrameFifo.h */,
@@ -339,6 +353,7 @@
 				B97A35B319B9951900030116 /* CHWAudioPlayer.h */,
 				B97A35B419B9951900030116 /* CHWAudioPlayer.m */,
 			);
+			name = CHWMovieDecodeWorker;
 			path = FFMpegDecoder;
 			sourceTree = "<group>";
 		};
@@ -511,6 +526,21 @@
 			path = lib;
 			sourceTree = "<group>";
 		};
+		B9C8A17919C0AB8400E3DC38 /* 3rd Player */ = {
+			isa = PBXGroup;
+			children = (
+				B9C8A17A19C0AB9900E3DC38 /* DFUViewController.h */,
+				B9C8A17B19C0AB9900E3DC38 /* DFUViewController.m */,
+				B9C8A17D19C0ABA700E3DC38 /* AudioStreamer.h */,
+				B9C8A17E19C0ABA700E3DC38 /* AudioStreamer.m */,
+				B9C8A17F19C0ABA700E3DC38 /* RTSPPlayer.h */,
+				B9C8A18019C0ABA700E3DC38 /* RTSPPlayer.m */,
+				B9C8A18119C0ABA700E3DC38 /* Utilities.h */,
+				B9C8A18219C0ABA700E3DC38 /* Utilities.m */,
+			);
+			name = "3rd Player";
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -622,8 +652,12 @@
 				B97A34FA19B967D800030116 /* main.m in Sources */,
 				B97A35A119B9696C00030116 /* CHWVideoFrameFifo.m in Sources */,
 				B97A34FE19B967D800030116 /* CHWAppDelegate.m in Sources */,
+				B9C8A17C19C0AB9900E3DC38 /* DFUViewController.m in Sources */,
+				B9C8A18319C0ABA700E3DC38 /* AudioStreamer.m in Sources */,
 				B97A35A019B9696C00030116 /* CHWUtilities.m in Sources */,
+				B9C8A18419C0ABA700E3DC38 /* RTSPPlayer.m in Sources */,
 				B97A35AD19B9696C00030116 /* CHWVideoProgressView.m in Sources */,
+				B9C8A18519C0ABA700E3DC38 /* Utilities.m in Sources */,
 				B97A35AE19B9696C00030116 /* CHWVideoView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
