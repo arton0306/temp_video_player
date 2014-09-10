@@ -19,9 +19,9 @@
 //  Lesser General Public License for more details.
 //
 
-#import "Utilities.h"
+#import "CHWUtilities.h"
 
-@implementation Utilities
+@implementation CHWUtilities
 
 +(NSString *)bundlePath:(NSString *)fileName {
 	return [[[NSBundle mainBundle] bundlePath] stringByAppendingPathComponent:fileName];
@@ -58,6 +58,27 @@
 	// NSString *fileName = [Utilities documentsPath:[NSString stringWithFormat:@"image%04d.ppm",iFrame]];
     // NSLog(@"write image file: %@",fileName);
     // [data writeToFile:fileName atomically:YES];
+}
+
++(void)appendData:(NSData*)data ToFileInDocument:(NSString*)filename
+{
+	NSString *fullpathFilename = [CHWUtilities documentsPath:filename];
+    
+    BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:fullpathFilename];
+
+    if ( fileExists )
+    {
+        [data writeToFile:fullpathFilename atomically:NO];
+        NSLog( @"%@ does not exsits, we create one and write data into it", fullpathFilename );
+    }
+    else
+    {
+        NSLog( @"%@ exsits, we append data to it", fullpathFilename );
+        NSFileHandle *fileHandle = [NSFileHandle fileHandleForWritingAtPath:fullpathFilename];
+        [fileHandle seekToEndOfFile];
+        [fileHandle writeData:data];
+        [fileHandle closeFile];
+    }
 }
 
 @end

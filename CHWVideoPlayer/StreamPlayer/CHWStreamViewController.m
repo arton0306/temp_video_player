@@ -9,7 +9,7 @@
 
 #import "CHWStreamViewController.h"
 #import "RTSPPlayer.h"
-#import "Utilities.h"
+#import "CHWUtilities.h"
 #import "CHWVideoProgressView.h"
 
 @interface CHWStreamViewController ()

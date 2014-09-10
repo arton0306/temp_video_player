@@ -11,6 +11,7 @@
 #import <AudioToolbox/AudioToolbox.h>
 #import <AVFoundation/AVFoundation.h>
 #import "CHWVideoFrameFifo.h"
+#import "CHWUtilities.h"
 
 static const int kNumAQBufs = 3;
 static const int kAudioBufferSeconds = 3;
@@ -201,10 +202,11 @@ void audioQueueIsRunningCallback(void *inClientData, AudioQueueRef inAQ,
     memset(&format, 0, sizeof(format));
     format.mSampleRate          = 44100;
     format.mFormatID            = kAudioFormatLinearPCM;
+    // format.mFormatFlags         = kLinearPCMFormatFlagIsFloat;
     format.mFormatFlags         = kLinearPCMFormatFlagIsSignedInteger | kLinearPCMFormatFlagIsPacked;
-    format.mChannelsPerFrame    = 1;
     format.mBitsPerChannel      = 16;
     format.mBytesPerFrame       = (format.mBitsPerChannel / 8) * format.mChannelsPerFrame;
+    format.mChannelsPerFrame    = 1;
     format.mFramesPerPacket     = 1;
     format.mBytesPerPacket      = format.mBytesPerFrame * format.mFramesPerPacket;
     
@@ -220,7 +222,7 @@ void audioQueueIsRunningCallback(void *inClientData, AudioQueueRef inAQ,
     //OSStatus status = AudioQueueNewOutput( &format, audioQueueOutputCallback, (__bridge void*)self, CFRunLoopGetCurrent(), kCFRunLoopCommonModes, 0, &audioQueue );
     OSStatus status = AudioQueueNewOutput( &format, audioQueueOutputCallback, (__bridge void*)self, NULL, NULL, 0, &audioQueue );
     if (status != noErr) {
-        NSLog(@"Could not create new audio queue.");
+        NSLog(@"Could not create new audio queue. error = %d", (int)status );
         return NO;
     }
     
@@ -268,6 +270,12 @@ void audioQueueIsRunningCallback(void *inClientData, AudioQueueRef inAQ,
     }
 }
 
+- (void) p_debugAudioStream:(NSData*)data
+{
+    static NSString *debug_audio_file = @"audio_stream.pcm";
+    [CHWUtilities appendData:data ToFileInDocument:debug_audio_file];
+}
+
 - (OSStatus)enqueueBuffer:(AudioQueueBufferRef)buffer
 {
     OSStatus status = noErr;
@@ -295,9 +303,16 @@ void audioQueueIsRunningCallback(void *inClientData, AudioQueueRef inAQ,
             int decodedAudioDataSize = [[self.currentAudioFrame data] length];
             if ( buffer->mAudioDataBytesCapacity - buffer->mAudioDataByteSize >= decodedAudioDataSize )
             {
-                memcpy((uint8_t *)buffer->mAudioData + buffer->mAudioDataByteSize, [[self.currentAudioFrame data] bytes], decodedAudioDataSize );
+                memcpy((uint8_t *)buffer->mAudioData + buffer->mAudioDataByteSize, [self.currentAudioFrame.data bytes], decodedAudioDataSize );
                 buffer->mAudioDataByteSize += decodedAudioDataSize;
                 self.currentAudioFrame = nil;
+                
+                // for dump audio raw data to debug
+                const BOOL AUDIO_STREAM_DUMP = YES;
+                if ( AUDIO_STREAM_DUMP )
+                {
+                    [self p_debugAudioStream:self.currentAudioFrame.data];
+                }
             }
             else
             {

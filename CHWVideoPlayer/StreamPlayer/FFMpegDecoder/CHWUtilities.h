@@ -21,12 +21,13 @@
 
 #import <Foundation/Foundation.h>
 
-@interface Utilities : NSObject {
+@interface CHWUtilities : NSObject {
 
 }
 
 +(NSString *)bundlePath:(NSString *)fileName;
 +(NSString *)documentsPath:(NSString *)fileName;
 +(NSMutableData*)ppmDataFromRgbData:(NSData*)frameData AndWidth:(int)width AndHeight:(int)height;
++(void)appendData:(NSData*)data ToFileInDocument:(NSString*)filename;
 
 @end

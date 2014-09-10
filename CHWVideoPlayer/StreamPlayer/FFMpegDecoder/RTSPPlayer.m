@@ -1,5 +1,5 @@
 #import "RTSPPlayer.h"
-#import "Utilities.h"
+#import "CHWUtilities.h"
 #import "CHWAVInfo.h"
 #import "CHWVideoFrameFifo.h"
 
@@ -477,7 +477,7 @@ AVCodecContext *p_getCodecCtxWithCodec( AVFormatContext * aFormatCtx, int aStrea
 - (void)p_savePPM:(NSData*)data index:(int)iFrame
 {
 	NSString *fileName;
-	fileName = [Utilities documentsPath:[NSString stringWithFormat:@"image%04d.ppm",iFrame]];
+	fileName = [CHWUtilities documentsPath:[NSString stringWithFormat:@"image%04d.ppm",iFrame]];
     NSLog(@"write image file: %@",fileName);
     [data writeToFile:fileName atomically:YES];
 }
