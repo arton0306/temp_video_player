@@ -9,7 +9,7 @@
 #import "CHWAVInfo.h"
 #import "CHWAudioPlayer.h"
 
-@interface CHWMoviePlayer : NSObject
+@interface CHWMovieDecodeWorker : NSObject
 {
 	AVFormatContext *pFormatCtx;
     AVFrame *pFrame;

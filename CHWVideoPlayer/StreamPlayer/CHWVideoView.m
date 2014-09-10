@@ -7,7 +7,7 @@
 //
 
 #import "CHWVideoView.h"
-#import "CHWMoviePlayer.h"
+#import "CHWMovieDecodeWorker.h"
 
 @interface CHWVideoView()
 
@@ -19,7 +19,7 @@
 @property (nonatomic, copy) VoidHandler seekDoneHandler;
 
 @property (nonatomic, retain) NSTimer *nextFrameTimer;
-@property (nonatomic, retain) CHWMoviePlayer *video;
+@property (nonatomic, retain) CHWMovieDecodeWorker *video;
 
 @end
 

@@ -13,6 +13,8 @@
 #import "CHWVideoFrameFifo.h"
 #import "CHWUtilities.h"
 
+static BOOL isUseDescription = NO;
+
 static const int kNumAQBufs = 3;
 static const int kAudioBufferSeconds = 3;
 
@@ -198,6 +200,7 @@ void audioQueueIsRunningCallback(void *inClientData, AudioQueueRef inAQ,
         }
     }
     
+    /*
     AudioStreamBasicDescription format;
     memset(&format, 0, sizeof(format));
     format.mSampleRate          = 44100;
@@ -209,6 +212,7 @@ void audioQueueIsRunningCallback(void *inClientData, AudioQueueRef inAQ,
     format.mBytesPerFrame       = (format.mBitsPerChannel / 8) * format.mChannelsPerFrame;
     format.mFramesPerPacket     = 1;
     format.mBytesPerPacket      = format.mBytesPerFrame * format.mFramesPerPacket;
+     */
     
     /*
      AudioStreamBasicDescription format;
@@ -245,17 +249,28 @@ void audioQueueIsRunningCallback(void *inClientData, AudioQueueRef inAQ,
         return NO;
     }
     
-    for (NSInteger i = 0; i < kNumAQBufs; ++i) {
-        /*
-        status = AudioQueueAllocateBufferWithPacketDescriptions(audioQueue,
-                                                                audioStreamBasicDesc.mSampleRate * kAudioBufferSeconds / 8,
-                                                                audioCodecContext->sample_rate * kAudioBufferSeconds / (audioCodecContext->frame_size + 1),
-                                                                &audioQueueBuffer[i]);
-         */
-        //int inBufferByteSize = audioStreamBasicDesc.mSampleRate * kAudioBufferSeconds * 3 / 8;
-        int inBufferByteSize = 9192;
-        //NSLog( @"buffer size:%d", inBufferByteSize );
-        status = AudioQueueAllocateBuffer( audioQueue, inBufferByteSize, &audioQueueBuffer[i] );
+    for (NSInteger i = 0; i < kNumAQBufs; ++i)
+    {
+        if ( isUseDescription )
+        {
+            NSLog( @"inBufferSize:%f, inNumberPacketDescriptions:%d",
+                  audioStreamBasicDesc.mSampleRate * kAudioBufferSeconds / 8,
+                  audioCodecContext->sample_rate * kAudioBufferSeconds / (audioCodecContext->frame_size + 1));
+            /*
+             status = AudioQueueAllocateBufferWithPacketDescriptions(audioQueue,
+             audioStreamBasicDesc.mSampleRate * kAudioBufferSeconds / 8,
+             audioCodecContext->sample_rate * kAudioBufferSeconds / (audioCodecContext->frame_size + 1),
+             &audioCodecContext[i]);
+             */
+        }
+        else
+        {
+            //int inBufferByteSize = audioStreamBasicDesc.mSampleRate * kAudioBufferSeconds * 3 / 8;
+            int inBufferByteSize = 9192;
+            NSLog( @"buffer size:%d", inBufferByteSize );
+            status = AudioQueueAllocateBuffer( audioQueue, inBufferByteSize, &audioQueueBuffer[i] );
+        }
+        
         if (status != noErr) {
             NSLog(@"Could not allocate buffer.");
             return NO;
@@ -322,6 +337,7 @@ void audioQueueIsRunningCallback(void *inClientData, AudioQueueRef inAQ,
         AudioTimeStamp bufferStartTime;
         buffer->mAudioDataByteSize = 0;
         buffer->mPacketDescriptionCount = 0;
+        NSLog( @"buffer capaicity:%d", buffer->mPacketDescriptionCapacity );
         
         if ( [self.audioFifo isEmpty] )
         {
@@ -329,6 +345,8 @@ void audioQueueIsRunningCallback(void *inClientData, AudioQueueRef inAQ,
             return status;
         }
         
+        buffer->mAudioDataByteSize = 0;
+        buffer->mPacketDescriptionCount = 0;
         while ( YES )
         {
             if ( [self.audioFifo isEmpty] && self.currentAudioFrame == nil ) break;
@@ -336,26 +354,45 @@ void audioQueueIsRunningCallback(void *inClientData, AudioQueueRef inAQ,
             if ( self.currentAudioFrame == nil )
             {
                 self.currentAudioFrame = [self.audioFifo dequeue];
-                //NSLog( @"audio frame count=%d", self.audioFifo.frameCount );
+                NSLog( @"audio frame count=%d", self.audioFifo.frameCount );
             }
             int decodedAudioDataSize = [[self.currentAudioFrame data] length];
-            if ( buffer->mAudioDataBytesCapacity - buffer->mAudioDataByteSize >= decodedAudioDataSize )
+            
+            if ( isUseDescription )
             {
-                memcpy((uint8_t *)buffer->mAudioData + buffer->mAudioDataByteSize, [self.currentAudioFrame.data bytes], decodedAudioDataSize );
-                buffer->mAudioDataByteSize += decodedAudioDataSize;
-                
-                // for dump audio raw data to debug
-                const BOOL AUDIO_STREAM_DUMP = NO;
-                if ( AUDIO_STREAM_DUMP )
-                {
-                    [self p_debugAudioStream:self.currentAudioFrame.data];
+                if (buffer->mAudioDataBytesCapacity - buffer->mAudioDataByteSize >= decodedAudioDataSize) {
+                    memcpy((uint8_t *)buffer->mAudioData + buffer->mAudioDataByteSize, [self.currentAudioFrame.data bytes], decodedAudioDataSize);
+                    buffer->mPacketDescriptions[buffer->mPacketDescriptionCount].mStartOffset = buffer->mAudioDataByteSize;
+                    buffer->mPacketDescriptions[buffer->mPacketDescriptionCount].mDataByteSize = decodedAudioDataSize;
+                    buffer->mPacketDescriptions[buffer->mPacketDescriptionCount].mVariableFramesInPacket = audioCodecContext->frame_size;
+                    
+                    buffer->mAudioDataByteSize += decodedAudioDataSize;
+                    buffer->mPacketDescriptionCount++;
                 }
-                
-                self.currentAudioFrame = nil;                
+                else {
+                    break;
+                }
             }
             else
             {
-                break;
+                if ( buffer->mAudioDataBytesCapacity - buffer->mAudioDataByteSize >= decodedAudioDataSize )
+                {
+                    memcpy((uint8_t *)buffer->mAudioData + buffer->mAudioDataByteSize, [self.currentAudioFrame.data bytes], decodedAudioDataSize );
+                    buffer->mAudioDataByteSize += decodedAudioDataSize;
+                    
+                    // for dump audio raw data to debug
+                    const BOOL AUDIO_STREAM_DUMP = NO;
+                    if ( AUDIO_STREAM_DUMP )
+                    {
+                        [self p_debugAudioStream:self.currentAudioFrame.data];
+                    }
+                    
+                    self.currentAudioFrame = nil;
+                }
+                else
+                {
+                    break;
+                }
             }
         }
 

@@ -1,11 +1,11 @@
-#import "CHWMoviePlayer.h"
+#import "CHWMovieDecodeWorker.h"
 #import "CHWUtilities.h"
 #import "CHWAVInfo.h"
 #import "CHWVideoFrameFifo.h"
 
 #define BITS_PER_BYTES 8
 
-@interface CHWMoviePlayer ()
+@interface CHWMovieDecodeWorker ()
 
 @property (nonatomic, assign) AVCodecContext *videoCodecCtx;
 @property (nonatomic, assign) AVCodecContext *audioCodecCtx;
@@ -24,7 +24,7 @@
 -(void)savePicture:(AVPicture)pFrame width:(int)width height:(int)height index:(int)iFrame;
 @end
 
-@implementation CHWMoviePlayer
+@implementation CHWMovieDecodeWorker
 
 #pragma mark - setter and getter
 
@@ -376,7 +376,7 @@ AVCodecContext *p_getCodecCtxWithCodec( AVFormatContext * aFormatCtx, int aStrea
             //NSLog( @"self.audioFifo frame count: %d", self.audioFifo.frameCount );
             //NSLog( @"audio frame, packet ndx:%4d, audio frame ndx:%4d, dts:%8.4lf, pts:%8.4lf", packetIndex, audioFrameIndex, dtsSec, ptsSec );
             
-            BOOL AUDIO_DEBUG = YES;
+            BOOL AUDIO_DEBUG = NO;
             if ( AUDIO_DEBUG )
             {
                 //NSLog( @"%@", data );

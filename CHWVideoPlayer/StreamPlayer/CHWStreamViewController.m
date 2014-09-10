@@ -8,7 +8,7 @@
 //
 
 #import "CHWStreamViewController.h"
-#import "CHWMoviePlayer.h"
+#import "CHWMovieDecodeWorker.h"
 #import "CHWUtilities.h"
 #import "CHWVideoProgressView.h"
 
@@ -37,7 +37,7 @@
 
     BOOL isUseTcp = NO;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        self.video = [[CHWMoviePlayer alloc] initWithVideo:thePath usesTcp:isUseTcp decodeAudioBySoftware:NO];
+        self.video = [[CHWMovieDecodeWorker alloc] initWithVideo:thePath usesTcp:isUseTcp decodeAudioBySoftware:NO];
         
         //self.video = [[RTSPPlayer alloc] initWithVideo:@"rtsp://media1.law.harvard.edu/Media/policy_a/2012/02/02_unger.mov" usesTcp:YES];//
         

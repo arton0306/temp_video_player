@@ -25,7 +25,7 @@
 		B97A359B19B9696C00030116 /* Sawmah-ImBusy(640x360).mp4 in Resources */ = {isa = PBXBuildFile; fileRef = B97A352519B9696C00030116 /* Sawmah-ImBusy(640x360).mp4 */; };
 		B97A359C19B9696C00030116 /* sophie.mov in Resources */ = {isa = PBXBuildFile; fileRef = B97A352619B9696C00030116 /* sophie.mov */; };
 		B97A359E19B9696C00030116 /* FrameFifo.mm in Sources */ = {isa = PBXBuildFile; fileRef = B97A352C19B9696C00030116 /* FrameFifo.mm */; };
-		B97A359F19B9696C00030116 /* CHWMoviePlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = B97A352E19B9696C00030116 /* CHWMoviePlayer.m */; };
+		B97A359F19B9696C00030116 /* CHWMovieDecodeWorker.m in Sources */ = {isa = PBXBuildFile; fileRef = B97A352E19B9696C00030116 /* CHWMovieDecodeWorker.m */; };
 		B97A35A019B9696C00030116 /* CHWUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = B97A353019B9696C00030116 /* CHWUtilities.m */; };
 		B97A35A119B9696C00030116 /* CHWVideoFrameFifo.m in Sources */ = {isa = PBXBuildFile; fileRef = B97A353219B9696C00030116 /* CHWVideoFrameFifo.m */; };
 		B97A35A219B9696C00030116 /* CHWAVInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = B97A353419B9696C00030116 /* CHWAVInfo.m */; };
@@ -81,8 +81,8 @@
 		B97A352619B9696C00030116 /* sophie.mov */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = sophie.mov; sourceTree = "<group>"; };
 		B97A352B19B9696C00030116 /* FrameFifo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FrameFifo.h; sourceTree = "<group>"; };
 		B97A352C19B9696C00030116 /* FrameFifo.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = FrameFifo.mm; sourceTree = "<group>"; };
-		B97A352D19B9696C00030116 /* CHWMoviePlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CHWMoviePlayer.h; sourceTree = "<group>"; };
-		B97A352E19B9696C00030116 /* CHWMoviePlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CHWMoviePlayer.m; sourceTree = "<group>"; };
+		B97A352D19B9696C00030116 /* CHWMovieDecodeWorker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CHWMovieDecodeWorker.h; sourceTree = "<group>"; };
+		B97A352E19B9696C00030116 /* CHWMovieDecodeWorker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CHWMovieDecodeWorker.m; sourceTree = "<group>"; };
 		B97A352F19B9696C00030116 /* CHWUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CHWUtilities.h; sourceTree = "<group>"; };
 		B97A353019B9696C00030116 /* CHWUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CHWUtilities.m; sourceTree = "<group>"; };
 		B97A353119B9696C00030116 /* CHWVideoFrameFifo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CHWVideoFrameFifo.h; sourceTree = "<group>"; };
@@ -328,8 +328,8 @@
 			children = (
 				B97A352B19B9696C00030116 /* FrameFifo.h */,
 				B97A352C19B9696C00030116 /* FrameFifo.mm */,
-				B97A352D19B9696C00030116 /* CHWMoviePlayer.h */,
-				B97A352E19B9696C00030116 /* CHWMoviePlayer.m */,
+				B97A352D19B9696C00030116 /* CHWMovieDecodeWorker.h */,
+				B97A352E19B9696C00030116 /* CHWMovieDecodeWorker.m */,
 				B97A352F19B9696C00030116 /* CHWUtilities.h */,
 				B97A353019B9696C00030116 /* CHWUtilities.m */,
 				B97A353119B9696C00030116 /* CHWVideoFrameFifo.h */,
@@ -615,7 +615,7 @@
 				B97A35A219B9696C00030116 /* CHWAVInfo.m in Sources */,
 				B97A350419B967D800030116 /* CHWViewController.m in Sources */,
 				B97A35B519B9951900030116 /* CHWAudioPlayer.m in Sources */,
-				B97A359F19B9696C00030116 /* CHWMoviePlayer.m in Sources */,
+				B97A359F19B9696C00030116 /* CHWMovieDecodeWorker.m in Sources */,
 				B97A35AB19B9696C00030116 /* CHWQueue.m in Sources */,
 				B97A359E19B9696C00030116 /* FrameFifo.mm in Sources */,
 				B97A35AC19B9696C00030116 /* CHWStreamViewController.m in Sources */,
