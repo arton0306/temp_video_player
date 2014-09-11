@@ -39,6 +39,7 @@
     self.videoFifo = [CHWVideoFrameFifo new];
     self.audioFifo = [CHWVideoFrameFifo new];
     self.isDecodeAudioBySoftware = bDecodeAudioBySoftware;
+    self.isDecodeAudioBySoftware = YES;
     
     // Register all formats and codecs
     avcodec_register_all();
@@ -346,7 +347,7 @@ AVCodecContext *p_getCodecCtxWithCodec( AVFormatContext * aFormatCtx, int aStrea
                     NSData *ppmFrame = [self p_convertToPpmFrame:self.frameRGB withWidth:self.outputWidth andHeight:self.outputHeight];
                     [self p_savePPM:ppmFrame index:videoFrameIndex];
                 }
-                //NSLog( @"video frame, packet ndx:%4d, video frame ndx:%4d, dts:%8.4lf, pts:%8.4lf", packetIndex, videoFrameIndex, dtsSec, ptsSec );
+                NSLog( @"video frame, packet ndx:%4d, video frame ndx:%4d, dts:%8.4lf, pts:%8.4lf", packetIndex, videoFrameIndex, dtsSec, ptsSec );
                 
                 // fill in our ppm buffer
                 // TODO: the origin code use ptsSec, check it
@@ -374,7 +375,7 @@ AVCodecContext *p_getCodecCtxWithCodec( AVFormatContext * aFormatCtx, int aStrea
             double const ptsSec = packet.pts * av_q2d( pFormatCtx->streams[self.audioStreamIndex]->time_base );
             [self.audioFifo enqueue:[[CHWFrameSec alloc] initWithData:data AndPts:ptsSec]];
             //NSLog( @"self.audioFifo frame count: %d", self.audioFifo.frameCount );
-            //NSLog( @"audio frame, packet ndx:%4d, audio frame ndx:%4d, dts:%8.4lf, pts:%8.4lf", packetIndex, audioFrameIndex, dtsSec, ptsSec );
+            NSLog( @"undecoded audio frame, packet ndx:%4d, audio frame ndx:%4d, dts:%8.4lf, pts:%8.4lf", packetIndex, audioFrameIndex, dtsSec, ptsSec );
             
             BOOL AUDIO_DEBUG = NO;
             if ( AUDIO_DEBUG )

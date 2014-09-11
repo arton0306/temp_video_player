@@ -1,19 +1,20 @@
 #import "AudioStreamer.h"
 #import "RTSPPlayer.h"
+#import "CHWUtilities.h"
 
-void audioQueueOutputCallback(void *inClientData, AudioQueueRef inAQ,
+static void audioQueueOutputCallback(void *inClientData, AudioQueueRef inAQ,
   AudioQueueBufferRef inBuffer);
-void audioQueueIsRunningCallback(void *inClientData, AudioQueueRef inAQ,
+static void audioQueueIsRunningCallback(void *inClientData, AudioQueueRef inAQ,
   AudioQueuePropertyID inID);
 
-void audioQueueOutputCallback(void *inClientData, AudioQueueRef inAQ,
+static void audioQueueOutputCallback(void *inClientData, AudioQueueRef inAQ,
   AudioQueueBufferRef inBuffer) {
 
     AudioStreamer *audioController = (__bridge AudioStreamer*)inClientData;
     [audioController audioQueueOutputCallback:inAQ inBuffer:inBuffer];
 }
 
-void audioQueueIsRunningCallback(void *inClientData, AudioQueueRef inAQ,
+static void audioQueueIsRunningCallback(void *inClientData, AudioQueueRef inAQ,
   AudioQueuePropertyID inID) {
 
     AudioStreamer *audioController = (__bridge AudioStreamer*)inClientData;
@@ -177,6 +178,11 @@ void audioQueueIsRunningCallback(void *inClientData, AudioQueueRef inAQ,
     }
 
     for (NSInteger i = 0; i < kNumAQBufs; ++i) {
+        
+        NSLog( @"inBufferSize:%f, inNumberPacketDescriptions:%d",
+              audioStreamBasicDesc_.mSampleRate * kAudioBufferSeconds / 8,
+              _audioCodecContext->sample_rate * kAudioBufferSeconds / (_audioCodecContext->frame_size + 1));
+        
       status = AudioQueueAllocateBufferWithPacketDescriptions(audioQueue_,
                                                               audioStreamBasicDesc_.mSampleRate * kAudioBufferSeconds / 8,
                                                               _audioCodecContext->sample_rate * kAudioBufferSeconds / (_audioCodecContext->frame_size + 1),
@@ -230,6 +236,25 @@ void audioQueueIsRunningCallback(void *inClientData, AudioQueueRef inAQ,
     }
 }
 
+- (void) p_debugAudioStream:(NSData*)data
+{
+    static NSString *debug_audio_file = @"dfu_audio_stream.pcm";
+    NSString *saveFilename = [CHWUtilities documentsPath:debug_audio_file];
+    
+    static BOOL firstRun = YES;
+    if ( firstRun )
+    {
+        [CHWUtilities purgeFile:saveFilename];
+        firstRun = NO;
+    }
+    
+    long long beforeFilesize = [CHWUtilities getFileSizeInBytes:saveFilename];
+    [CHWUtilities appendData:data ToFile:saveFilename];
+    long long afterFilesize = [CHWUtilities getFileSizeInBytes:saveFilename];
+    
+    NSLog( @"%@ file size : %lld => %lld", saveFilename, beforeFilesize, afterFilesize );
+}
+
 - (OSStatus)enqueueBuffer:(AudioQueueBufferRef)buffer
 {
     OSStatus status = noErr;
@@ -265,7 +290,10 @@ void audioQueueIsRunningCallback(void *inClientData, AudioQueueRef inAQ,
                 
                 
                 _streamer.audioPacketQueueSize -= packet->size;
-                            
+                
+                // NSData *audioData = [NSData dataWithBytes:packet->data length:packet->size];
+                // [self p_debugAudioStream:audioData];
+                
                 av_free_packet(packet);
             }
             else {

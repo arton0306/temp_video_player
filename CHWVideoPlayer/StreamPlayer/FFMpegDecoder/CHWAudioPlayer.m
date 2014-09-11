@@ -256,12 +256,11 @@ static void audioQueueIsRunningCallback(void *inClientData, AudioQueueRef inAQ,
             NSLog( @"inBufferSize:%f, inNumberPacketDescriptions:%d",
                   audioStreamBasicDesc.mSampleRate * kAudioBufferSeconds / 8,
                   audioCodecContext->sample_rate * kAudioBufferSeconds / (audioCodecContext->frame_size + 1));
-            /*
+            
              status = AudioQueueAllocateBufferWithPacketDescriptions(audioQueue,
              audioStreamBasicDesc.mSampleRate * kAudioBufferSeconds / 8,
              audioCodecContext->sample_rate * kAudioBufferSeconds / (audioCodecContext->frame_size + 1),
-             &audioCodecContext[i]);
-             */
+             &audioQueueBuffer[i]);
         }
         else
         {
@@ -333,11 +332,9 @@ static void audioQueueIsRunningCallback(void *inClientData, AudioQueueRef inAQ,
     OSStatus status = noErr;
     
     if (buffer) {
-
-        AudioTimeStamp bufferStartTime;
         buffer->mAudioDataByteSize = 0;
         buffer->mPacketDescriptionCount = 0;
-        NSLog( @"buffer capaicity:%d", buffer->mPacketDescriptionCapacity );
+        NSLog( @"buffer capaicity:%d", (unsigned int)buffer->mPacketDescriptionCapacity );
         
         if ( [self.audioFifo isEmpty] )
         {
